@@ -1,10 +1,9 @@
 import { WorkPlanForm } from "@/app/dashboard/department/work-plans/work-plan-form";
-import { ActivityForm } from "@/app/dashboard/department/work-plans/activity-form";
 import { ReportForm } from "@/app/dashboard/department/reports/report-form";
 import { EvidenceUploadForm } from "@/app/dashboard/department/evidence/evidence-upload-form";
 import { DepartmentForm } from "@/app/dashboard/officer/departments/department-form";
 import { ObjectiveForm } from "@/app/dashboard/officer/framework/objective-form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 const pageMeta: Record<string, { title: string; subtitle: string; action?: React.ReactNode }> = {
   "work-plans": {
@@ -30,7 +29,7 @@ const pageMeta: Record<string, { title: string; subtitle: string; action?: React
   framework: {
     title: "Results Framework",
     subtitle: "Manage strategic objectives, outcomes, and outputs",
-    action: <ObjectiveForm />,
+    action: <ObjectiveForm departments={[]} />,
   },
   indicators: {
     title: "Outcome Indicators",

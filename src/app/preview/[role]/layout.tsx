@@ -1,7 +1,17 @@
 import { DashboardShell } from "@/components/dashboard-shell";
 import { redirect } from "next/navigation";
+import type { UserRole } from "@/lib/types";
 
-const mockProfiles: Record<string, any> = {
+type PreviewProfile = {
+  id: string;
+  email: string;
+  full_name: string;
+  role: UserRole;
+  department_id: string | null;
+  departments: { name: string } | null;
+};
+
+const mockProfiles: Record<string, PreviewProfile> = {
   department: {
     id: "preview-dept",
     email: "dept@preview.local",

@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ClipboardList, FileText, Upload, AlertCircle, Building2, BarChart2, Target, TrendingUp, FileCheck, AlertTriangle } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-const dashboards: Record<string, { title: string; subtitle: string; stats: { label: string; value: number; icon: any }[] }> = {
+const dashboards: Record<string, { title: string; subtitle: string; stats: { label: string; value: number; icon: LucideIcon }[] }> = {
   department: {
     title: "Welcome, Department User",
     subtitle: "ICT Department",

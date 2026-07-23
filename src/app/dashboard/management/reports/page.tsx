@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ExportReportButtons } from "@/components/export-report-buttons";
 import type { Report } from "@/lib/types";
 
 const statusVariant: Record<string, "default" | "secondary" | "success" | "warning" | "destructive" | "outline"> = {
@@ -20,7 +21,7 @@ export default async function ManagementReportsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Reports</h1>
+        <h1 className="text-2xl font-semibold">Report</h1>
         <p className="text-sm text-muted-foreground mt-1">Approved and verified department reports</p>
       </div>
 
@@ -43,7 +44,10 @@ export default async function ManagementReportsPage() {
                     {r.departments?.name} · <span className="capitalize">{r.reporting_period}</span>
                   </p>
                 </div>
-                <Badge variant={statusVariant[r.status] ?? "secondary"} className="capitalize">{r.status}</Badge>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant={statusVariant[r.status] ?? "secondary"} className="capitalize">{r.status}</Badge>
+                  <ExportReportButtons reportId={r.id} periodName={r.reporting_period_name} />
+                </div>
               </div>
             </CardHeader>
             <CardContent className="text-sm space-y-2">

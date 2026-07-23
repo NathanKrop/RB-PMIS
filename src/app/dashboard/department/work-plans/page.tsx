@@ -4,7 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { WorkPlanForm } from "./work-plan-form";
 import { ActivityForm } from "./activity-form";
 import { WorkPlanActions } from "./work-plan-actions";
-import type { WorkPlan, Activity, Output, Outcome, StrategicObjective } from "@/lib/types";
+import type { WorkPlan, Activity } from "@/lib/types";
+
+type ActivityWithOutput = Activity & { outputs: { code: string } | null };
 
 const statusVariant: Record<string, "default" | "secondary" | "success" | "warning" | "destructive" | "outline"> = {
   draft: "secondary",
@@ -31,9 +33,9 @@ export default async function WorkPlansPage() {
     supabase.from("outputs").select("id, code, title, outcome_id").order("code"),
   ]);
 
-  const activitiesByPlan: Record<string, (Activity & { outputs: any })[]> = {};
-  const unlinked: (Activity & { outputs: any })[] = [];
-  for (const a of (activities ?? [])) {
+  const activitiesByPlan: Record<string, ActivityWithOutput[]> = {};
+  const unlinked: ActivityWithOutput[] = [];
+  for (const a of (activities ?? []) as ActivityWithOutput[]) {
     if (a.work_plan_id) {
       activitiesByPlan[a.work_plan_id] = [...(activitiesByPlan[a.work_plan_id] ?? []), a];
     } else {
@@ -46,7 +48,7 @@ export default async function WorkPlansPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Work Plans</h1>
-          <p className="text-sm text-muted-foreground mt-1">Manage your department's work plans and activities</p>
+          <p className="text-sm text-muted-foreground mt-1">Manage your department&apos;s work plans and activities</p>
         </div>
         <WorkPlanForm />
       </div>

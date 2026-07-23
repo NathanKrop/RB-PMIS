@@ -4,16 +4,18 @@ import { ObjectiveForm } from "./objective-form";
 import { OutcomeForm } from "./outcome-form";
 import { OutputForm } from "./output-form";
 import { IndicatorForm } from "./indicator-form";
+import { IndicatorEditForm } from "./indicator-edit-form";
 import type { StrategicObjective, Outcome, Output, OutcomeIndicator } from "@/lib/types";
 
 export default async function FrameworkPage() {
   const supabase = await createClient();
 
-  const [{ data: objectives }, { data: outcomes }, { data: outputs }, { data: indicators }] = await Promise.all([
+  const [{ data: objectives }, { data: outcomes }, { data: outputs }, { data: indicators }, { data: departments }] = await Promise.all([
     supabase.from("strategic_objectives").select("*").order("code"),
     supabase.from("outcomes").select("*").order("code"),
     supabase.from("outputs").select("*").order("code"),
     supabase.from("outcome_indicators").select("*").order("created_at"),
+    supabase.from("departments").select("id, name").order("name"),
   ]);
 
   const outcomesByObj: Record<string, Outcome[]> = {};
@@ -38,7 +40,7 @@ export default async function FrameworkPage() {
           <h1 className="text-2xl font-semibold">Results Framework</h1>
           <p className="text-sm text-muted-foreground mt-1">Manage strategic objectives, outcomes, and outputs</p>
         </div>
-        <ObjectiveForm />
+        <ObjectiveForm departments={departments ?? []} />
       </div>
 
       {(!objectives || objectives.length === 0) && (
@@ -74,7 +76,7 @@ export default async function FrameworkPage() {
                       {oc.description && <p className="text-xs text-muted-foreground mt-0.5">{oc.description}</p>}
                     </div>
                     <div className="flex gap-2 shrink-0">
-                      <IndicatorForm outcomeId={oc.id} />
+                      <IndicatorForm outcomeId={oc.id} departments={departments ?? []} />
                       <OutputForm outcomeId={oc.id} />
                     </div>
                   </div>
@@ -86,8 +88,9 @@ export default async function FrameworkPage() {
                         {(indicatorsByOutcome[oc.id] ?? []).map((ind: OutcomeIndicator) => (
                           <div key={ind.id} className="text-xs bg-muted/50 rounded px-2.5 py-1.5 flex items-center justify-between gap-2">
                             <span className="truncate">{ind.title}</span>
-                            <span className="text-muted-foreground shrink-0">
+                            <span className="text-muted-foreground shrink-0 flex items-center gap-1">
                               {ind.current_value} / {ind.target} {ind.unit}
+                              <IndicatorEditForm indicator={ind} />
                             </span>
                           </div>
                         ))}

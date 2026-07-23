@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RB-PMIS
 
-## Getting Started
+RB-PMIS is a results-based programme management information system for departmental planning, outcome monitoring, evidence verification, reporting, and management oversight.
 
-First, run the development server:
+## Included capabilities
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Results framework ownership, reporting cadence, outcome indicators, editing, and trend visualisations.
+- Work plans with activity progress, monthly sequencing, achievements, variance analysis, risks, and resource allocation.
+- Outcome-based reports, approval workflows, Word/Excel/PDF exports, and management reporting views.
+- Evidence upload and review with classifications, links, location capture, metadata, versioning, and searchable repositories.
+- Beneficiary registration, feedback and testimonials; risk registers; knowledge management; and data-quality scans for completeness, anomalies, and duplicates.
+- Role-based dashboards, notifications, reporting deadlines, and an installable responsive web app manifest.
+
+## Local development
+
+1. Install dependencies with `npm install`.
+2. Create `.env.local` with:
+
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   ```
+
+3. Apply the SQL migrations in `supabase/migrations` to the target Supabase project, in filename order.
+4. Run `npm run dev` and open `http://localhost:3000`.
+
+## Production configuration
+
+In addition to the public Supabase values above, configure these server-only variables:
+
+```env
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+CRON_SECRET=a-long-random-secret
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Schedule a daily `POST` request to `/api/automation/deadlines` with the header `Authorization: Bearer <CRON_SECRET>`. The job creates due-date reminders and overdue escalations. It is safe to retry on the same day: duplicate notifications are prevented by the database function.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Never expose `SUPABASE_SERVICE_ROLE_KEY` or `CRON_SECRET` in browser code, public environment variables, or version control.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Verification
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run lint
+npm run build
+```

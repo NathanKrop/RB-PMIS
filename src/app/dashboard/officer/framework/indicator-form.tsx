@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { BarChart2 } from "lucide-react";
 import { createOutcomeIndicator } from "@/lib/actions";
 
-export function IndicatorForm({ outcomeId }: { outcomeId: string }) {
+export function IndicatorForm({ outcomeId, departments }: { outcomeId: string; departments: { id: string; name: string }[] }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,6 +56,10 @@ export function IndicatorForm({ outcomeId }: { outcomeId: string }) {
               <Label htmlFor="target">Target</Label>
               <Input id="target" name="target" type="number" step="any" required defaultValue="0" />
             </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5"><Label htmlFor="responsible_department_id">Responsible Department</Label><select id="responsible_department_id" name="responsible_department_id" className="h-9 w-full rounded-md border bg-background px-3 text-sm"><option value="">Not set</option>{departments.map((department) => <option key={department.id} value={department.id}>{department.name}</option>)}</select></div>
+            <div className="space-y-1.5"><Label htmlFor="reporting_frequency">Reporting Frequency</Label><select id="reporting_frequency" name="reporting_frequency" className="h-9 w-full rounded-md border bg-background px-3 text-sm"><option value="">Not set</option>{["weekly", "monthly", "quarterly", "annual"].map((period) => <option key={period} value={period}>{period}</option>)}</select></div>
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Saving…" : "Save"}

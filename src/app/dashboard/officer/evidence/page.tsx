@@ -4,6 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { EvidenceActions } from "./evidence-actions";
 import type { Evidence } from "@/lib/types";
 
+type EvidenceUploader = {
+  full_name: string | null;
+  email: string;
+  departments: { name: string } | null;
+};
+
 const statusVariant: Record<string, "default" | "secondary" | "success" | "warning" | "destructive" | "outline"> = {
   pending: "warning",
   verified: "success",
@@ -41,7 +47,7 @@ export default async function OfficerEvidencePage() {
       )}
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {(evidence ?? []).map((e: Evidence & { users: any }) => (
+        {(evidence ?? []).map((e: Evidence & { users: EvidenceUploader | null }) => (
           <Card key={e.id}>
             <CardHeader className="pb-2">
               <div className="flex items-start justify-between gap-2">

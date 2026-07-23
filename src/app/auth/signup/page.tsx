@@ -14,8 +14,6 @@ import type { Department } from "@/lib/types";
 export default function SignupPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [role, setRole] = useState("");
   const [departmentId, setDepartmentId] = useState("");
   const [departments, setDepartments] = useState<Department[]>([]);
 
@@ -32,8 +30,7 @@ export default function SignupPage() {
     setError(null);
 
     const formData = new FormData(e.currentTarget);
-    formData.set("role", role);
-    if (role === "department_user") formData.set("department_id", departmentId);
+    formData.set("department_id", departmentId);
 
     const result = await signup(formData);
     if (result?.error) {
@@ -67,39 +64,24 @@ export default function SignupPage() {
               <Input id="password" name="password" type="password" required placeholder="Min. 6 characters" minLength={6} />
             </div>
             <div className="space-y-1.5">
-              <Label>Role</Label>
-              <Select onValueChange={setRole} required>
+              <Label>Department</Label>
+              <Select onValueChange={setDepartmentId} required>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select your role" />
+                  <SelectValue placeholder="Select your department" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="department_user">Department User</SelectItem>
-                  <SelectItem value="reporting_officer">Programme Reporting Officer</SelectItem>
-                  <SelectItem value="management">Management / Executive</SelectItem>
+                  {departments.map((d) => (
+                    <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
-            {role === "department_user" && (
-              <div className="space-y-1.5">
-                <Label>Department</Label>
-                <Select onValueChange={setDepartmentId} required>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select your department" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {departments.map((d) => (
-                      <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
           </CardContent>
           <CardFooter className="flex flex-col gap-3">
             <Button
               type="submit"
               className="w-full"
-              disabled={loading || !role || (role === "department_user" && !departmentId)}
+              disabled={loading || !departmentId}
             >
               {loading ? "Creating account…" : "Create Account"}
             </Button>

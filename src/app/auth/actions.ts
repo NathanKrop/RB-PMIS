@@ -38,14 +38,16 @@ export async function signup(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const full_name = formData.get("full_name") as string;
-  const role = formData.get("role") as UserRole;
-  const department_id = formData.get("department_id") as string | null;
+  const departmentId = formData.get("department_id");
 
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { full_name, role },
+      data: {
+        full_name,
+        department_id: typeof departmentId === "string" ? departmentId : null,
+      },
     },
   });
 
@@ -58,16 +60,7 @@ export async function signup(formData: FormData) {
     if (signInError) return { error: "Account created. Please sign in manually." };
   }
 
-  // Update department after profile is created by trigger
-  const userId = data.user?.id ?? (await supabase.auth.getUser()).data.user?.id;
-  if (department_id && userId) {
-    await supabase.from("users").update({ department_id }).eq("id", userId);
-  }
-
   revalidatePath("/", "layout");
-
-  if (role === "reporting_officer") redirect("/dashboard/officer");
-  if (role === "management") redirect("/dashboard/management");
   redirect("/dashboard/department");
 }
 

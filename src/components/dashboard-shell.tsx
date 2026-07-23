@@ -5,12 +5,23 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, ClipboardList, FileText, Upload,
-  BarChart2, Settings, LogOut, Menu, X, Bell,
+  BarChart2, Settings, LogOut, Menu, X, BookOpen, Bell,
+  ClipboardCheck, ShieldAlert, Users, Briefcase, CalendarClock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { logout } from "@/app/auth/actions";
+import { NotificationBell } from "@/components/notification-bell";
 import type { UserRole } from "@/lib/types";
+
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  read: boolean;
+  notification_type: "reminder" | "escalation" | "info";
+  created_at: string;
+}
 
 interface Profile {
   full_name: string | null;
@@ -23,30 +34,47 @@ const navByRole: Record<UserRole, { href: string; label: string; icon: React.Ele
   department_user: [
     { href: "/dashboard/department", label: "Dashboard", icon: LayoutDashboard },
     { href: "/dashboard/department/work-plans", label: "Work Plans", icon: ClipboardList },
-    { href: "/dashboard/department/reports", label: "Reports", icon: FileText },
+    { href: "/dashboard/department/reports", label: "Report", icon: FileText },
     { href: "/dashboard/department/evidence", label: "Evidence", icon: Upload },
+    { href: "/dashboard/department/beneficiaries", label: "Beneficiaries", icon: Users },
+    { href: "/dashboard/department/resources", label: "Resources", icon: Briefcase },
+    { href: "/dashboard/department/knowledge", label: "Knowledge", icon: BookOpen },
+    { href: "/dashboard/department/notifications", label: "Notifications", icon: Bell },
   ],
   reporting_officer: [
     { href: "/dashboard/officer", label: "Dashboard", icon: LayoutDashboard },
     { href: "/dashboard/officer/departments", label: "Departments", icon: Settings },
     { href: "/dashboard/officer/framework", label: "Results Framework", icon: BarChart2 },
-    { href: "/dashboard/officer/reports", label: "Reports", icon: FileText },
+    { href: "/dashboard/officer/reports", label: "Report", icon: FileText },
     { href: "/dashboard/officer/evidence", label: "Evidence Review", icon: Upload },
+    { href: "/dashboard/officer/beneficiaries", label: "Beneficiaries", icon: Users },
+    { href: "/dashboard/officer/resources", label: "Resources", icon: Briefcase },
+    { href: "/dashboard/officer/data-quality", label: "Data Quality", icon: ClipboardCheck },
+    { href: "/dashboard/officer/deadlines", label: "Deadlines", icon: CalendarClock },
+    { href: "/dashboard/officer/risks", label: "Risk Register", icon: ShieldAlert },
+    { href: "/dashboard/officer/knowledge", label: "Knowledge", icon: BookOpen },
+    { href: "/dashboard/officer/notifications", label: "Notifications", icon: Bell },
   ],
   management: [
     { href: "/dashboard/management", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/dashboard/management/reports", label: "Reports", icon: FileText },
+    { href: "/dashboard/management/reports", label: "Report", icon: FileText },
     { href: "/dashboard/management/indicators", label: "Indicators", icon: BarChart2 },
+    { href: "/dashboard/management/beneficiaries", label: "Beneficiaries", icon: Users },
+    { href: "/dashboard/management/resources", label: "Resources", icon: Briefcase },
+    { href: "/dashboard/management/data-quality", label: "Data Quality", icon: ClipboardCheck },
+    { href: "/dashboard/management/risks", label: "Risk Register", icon: ShieldAlert },
+    { href: "/dashboard/management/knowledge", label: "Knowledge", icon: BookOpen },
+    { href: "/dashboard/management/notifications", label: "Notifications", icon: Bell },
   ],
 };
 
 const roleLabel: Record<UserRole, string> = {
-  department_user: "Department User",
+  department_user: "Trainer",
   reporting_officer: "Reporting Officer",
   management: "Management",
 };
 
-export function DashboardShell({ profile, children }: { profile: Profile; children: React.ReactNode }) {
+export function DashboardShell({ profile, notifications = [], children }: { profile: Profile; notifications?: Notification[]; children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
   const role = profile?.role ?? "department_user";
@@ -136,9 +164,7 @@ export function DashboardShell({ profile, children }: { profile: Profile; childr
             {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
           <span className="flex-1" />
-          <Button variant="ghost" size="icon">
-            <Bell className="h-5 w-5" />
-          </Button>
+          <NotificationBell notifications={notifications} />
         </header>
         <main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</main>
       </div>

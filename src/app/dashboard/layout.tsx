@@ -8,13 +8,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   if (!user) redirect("/auth/login");
 
-  const { data: profile } = await supabase
-    .from("users")
-    .select("*, departments(name)")
-    .eq("id", user.id)
-    .single();
+  const [{ data: profile }, { data: notifications }] = await Promise.all([
+    supabase.from("users").select("*, departments(name)").eq("id", user.id).single(),
+    supabase.from("notifications").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(30),
+  ]);
 
-  if (!profile) redirect("/auth/login");
-
-  return <DashboardShell profile={profile}>{children}</DashboardShell>;
+  return (
+    <DashboardShell profile={profile} notifications={notifications ?? []}>
+      {children}
+    </DashboardShell>
+  );
 }
