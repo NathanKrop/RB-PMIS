@@ -16,6 +16,7 @@ export async function createWorkPlan(formData: FormData) {
 
   const { error } = await supabase.from("work_plans").insert({
     department_id: profile.department_id,
+    created_by: user.id,
     period_type: formData.get("period_type") as string,
     period_name: formData.get("period_name") as string,
     status: "draft",
@@ -49,6 +50,7 @@ export async function updateWorkPlanStatus(id: string, status: string) {
 
   revalidatePath("/dashboard/department/work-plans");
   revalidatePath("/dashboard/officer/reports");
+  revalidatePath("/dashboard/management");
 }
 
 export async function createActivity(formData: FormData) {
@@ -528,7 +530,8 @@ export async function deleteResource(id: string) {
 export async function createDepartment(formData: FormData) {
   const supabase = await createClient();
   const { error } = await supabase.from("departments").insert({
-    name: formData.get("name") as string,
+    name: String(formData.get("name") ?? "").trim(),
+    parent_department_id: String(formData.get("parent_department_id") ?? "") || null,
   });
   if (error) return { error: error.message };
   revalidatePath("/dashboard/officer/departments");

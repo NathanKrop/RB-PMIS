@@ -1,4 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
+import { DeadlineOverview } from "@/components/deadline-overview";
+import type { Deadline } from "@/components/deadline-overview";
+import type { ReportingDeadline } from "@/lib/types";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, FileText, Upload, BarChart2 } from "lucide-react";
 import { DonutChart } from "@/components/charts/donut-chart";
@@ -34,6 +38,8 @@ export default async function OfficerDashboard() {
     { data: departments },
     { data: workPlans },
     { data: activities },
+    { data: deadlines },
+    { data: reportForDeadlines },
   ] = await Promise.all([
     supabase.from("departments").select("*", { count: "exact", head: true }),
     supabase.from("reports").select("*", { count: "exact", head: true }).eq("status", "submitted"),
@@ -44,6 +50,8 @@ export default async function OfficerDashboard() {
     supabase.from("departments").select("id, name").order("name"),
     supabase.from("work_plans").select("status, department_id"),
     supabase.from("activities").select("status, department_id"),
+    supabase.from("reporting_deadlines").select("*, departments(name)").order("due_date"),
+    supabase.from("reports").select("department_id, reporting_period_name").neq("status", "draft"),
   ]);
 
   // Reports per department
@@ -84,6 +92,17 @@ export default async function OfficerDashboard() {
       color: submitted / (total || 1) >= 0.75 ? "#22c55e" : submitted / (total || 1) >= 0.4 ? "#f59e0b" : "#ef4444",
     };
   }).filter((d) => d.value > 0);
+  // Enrich deadlines with submission status
+  const reportPeriods = new Set(
+    (reportForDeadlines ?? []).map((r) => r.department_id + "::" + r.reporting_period_name.toLowerCase().trim())
+  );
+  const enrichedDeadlines = (deadlines ?? []).map((d) => ({
+    ...d,
+    has_submission: reportPeriods.has(d.department_id + "::" + d.reporting_period_name.toLowerCase().trim()),
+  }));
+  const overdueDeadlines = enrichedDeadlines.filter((d) => !d.has_submission);
+
+
 
   // Work plan status per department
   const deptWorkPlanComparison = (departments ?? []).map((d) => ({
@@ -131,6 +150,10 @@ export default async function OfficerDashboard() {
           </Card>
         ))}
       </div>
+
+      {overdueDeadlines.length > 0 && (
+        <DeadlineOverview deadlines={overdueDeadlines} compact title="Overdue & Upcoming Deadlines" />
+      )}
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card>

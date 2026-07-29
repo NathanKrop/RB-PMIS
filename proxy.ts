@@ -1,6 +1,20 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+// Route-to-role mapping for authorization
+const routeRoleMap: Record<string, string> = {
+  "/dashboard/department": "department_user",
+  "/dashboard/officer": "reporting_officer",
+  "/dashboard/management": "management",
+};
+
+function getRequiredRole(pathname: string): string | null {
+  for (const [prefix, role] of Object.entries(routeRoleMap)) {
+    if (pathname.startsWith(prefix)) return role;
+  }
+  return null;
+}
+
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
@@ -51,6 +65,30 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL("/dashboard/management", request.url));
     } else {
       return NextResponse.redirect(new URL("/dashboard/department", request.url));
+    }
+  }
+
+  // Route-level role authorization for dashboard paths
+  if (user) {
+    const requiredRole = getRequiredRole(pathname);
+    if (requiredRole) {
+      const { data: profile } = await supabase
+        .from("users")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      if (profile && profile.role !== requiredRole) {
+        // Redirect to the correct dashboard for their role
+        const roleRedirect: Record<string, string> = {
+          department_user: "/dashboard/department",
+          reporting_officer: "/dashboard/officer",
+          management: "/dashboard/management",
+        };
+        return NextResponse.redirect(
+          new URL(roleRedirect[profile.role] ?? "/dashboard/department", request.url)
+        );
+      }
     }
   }
 

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, ClipboardList, FileText, Upload,
-  BarChart2, Settings, LogOut, Menu, X, BookOpen, Bell,
+  BarChart2, Settings, LogOut, Menu, X, BookOpen, Bell, Target,
   ClipboardCheck, ShieldAlert, Users, Briefcase, CalendarClock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -57,8 +57,10 @@ const navByRole: Record<UserRole, { href: string; label: string; icon: React.Ele
   ],
   management: [
     { href: "/dashboard/management", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/dashboard/management/reports", label: "Report", icon: FileText },
+    { href: "/dashboard/management/objectives", label: "Objectives", icon: Target },
+    { href: "/dashboard/management/activities", label: "Activities", icon: ClipboardList },
     { href: "/dashboard/management/indicators", label: "Indicators", icon: BarChart2 },
+    { href: "/dashboard/management/reports", label: "Report", icon: FileText },
     { href: "/dashboard/management/beneficiaries", label: "Beneficiaries", icon: Users },
     { href: "/dashboard/management/resources", label: "Resources", icon: Briefcase },
     { href: "/dashboard/management/data-quality", label: "Data Quality", icon: ClipboardCheck },

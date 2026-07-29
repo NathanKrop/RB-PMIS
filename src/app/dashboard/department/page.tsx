@@ -3,6 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ClipboardList, FileText, Upload, CheckCircle2 } from "lucide-react";
 import { DonutChart } from "@/components/charts/donut-chart";
 import { SimpleBarChart } from "@/components/charts/bar-chart";
+import { DeadlineOverview } from "@/components/deadline-overview";
+import { EvidenceCompletenessOverview } from "@/components/evidence-completeness";
+import type { Deadline } from "@/components/deadline-overview";
+import type { ReportingDeadline } from "@/lib/types";
 
 const ACTIVITY_COLORS: Record<string, string> = {
   planned: "#94a3b8",
@@ -40,17 +44,29 @@ export default async function DepartmentDashboard() {
     { count: completedCount },
     { count: workPlanCount },
     { data: indicators },
+    { data: deadlines },
+    { data: allReports },
   ] = await Promise.all([
     supabase.from("activities").select("status").eq("department_id", deptId),
     supabase.from("reports").select("status").eq("department_id", deptId),
     supabase.from("evidence").select("*", { count: "exact", head: true }).eq("uploaded_by", user!.id),
     supabase.from("activities").select("*", { count: "exact", head: true }).eq("department_id", deptId).eq("status", "completed"),
     supabase.from("work_plans").select("*", { count: "exact", head: true }).eq("department_id", deptId),
-    supabase
-      .from("indicators")
-      .select("title, target, current_value, activity_id, activities!inner(department_id)")
-      .eq("activities.department_id", deptId),
+    supabase.from("indicators").select("title, target, current_value, activity_id, activities!inner(department_id)").eq("activities.department_id", deptId),
+    supabase.from("reporting_deadlines").select("*, departments(name)").eq("department_id", deptId).order("due_date"),
+    supabase.from("reports").select("department_id, reporting_period_name").neq("status", "draft"),
   ]);
+
+  const reportPeriods = new Set(
+    (allReports ?? []).map((r) => `${r.department_id}::${r.reporting_period_name.toLowerCase().trim()}`)
+  );
+
+  const enrichedDeadlines: Deadline[] = (deadlines ?? []).map((d: ReportingDeadline & { departments: { name: string } | null }) => ({
+    ...d,
+    has_submission: reportPeriods.has(`${d.department_id}::${d.reporting_period_name.toLowerCase().trim()}`),
+  }));
+
+  const pendingDeadlines = enrichedDeadlines.filter((d) => !d.has_submission);
 
   const activityStatusCounts = (activities ?? []).reduce<Record<string, number>>((acc, a) => {
     acc[a.status] = (acc[a.status] ?? 0) + 1;
@@ -78,7 +94,7 @@ export default async function DepartmentDashboard() {
   const indicatorProgress = (indicators ?? [])
     .filter((i) => i.target > 0)
     .map((i) => ({
-      name: i.title.length > 20 ? i.title.slice(0, 20) + "…" : i.title,
+      name: i.title.length > 20 ? i.title.slice(0, 20) + "..." : i.title,
       value: Math.min(100, Math.round((i.current_value / i.target) * 100)),
       color: i.current_value >= i.target ? "#22c55e" : i.current_value / i.target >= 0.5 ? "#f59e0b" : "#ef4444",
     }));
@@ -116,6 +132,14 @@ export default async function DepartmentDashboard() {
           </Card>
         ))}
       </div>
+
+      {/* Deadline overview widget */}
+      {pendingDeadlines.length > 0 && (
+        <DeadlineOverview deadlines={pendingDeadlines} compact title="My Upcoming Deadlines" />
+      )}
+
+      {/* Evidence completeness */}
+      <EvidenceCompletenessOverview items={[{reportName:"Current Period",reportPeriod:reports?.[0]?.status||"draft",departmentName:profile?.departments?.name||"",evidenceCount:evidenceCount??0,hasEvidence:(evidenceCount??0)>0}]} compact />
 
       {/* Activity completion rate */}
       <Card>

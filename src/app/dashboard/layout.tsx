@@ -13,6 +13,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
     supabase.from("notifications").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(30),
   ]);
 
+  if (!profile) redirect("/auth/login");
+
   return (
     <DashboardShell profile={profile} notifications={notifications ?? []}>
       {children}

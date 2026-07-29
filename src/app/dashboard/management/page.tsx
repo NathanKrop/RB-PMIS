@@ -4,6 +4,10 @@ import { Target, TrendingUp, FileCheck, AlertTriangle } from "lucide-react";
 import { DonutChart } from "@/components/charts/donut-chart";
 import { SimpleBarChart } from "@/components/charts/bar-chart";
 import { TrendLineChart } from "@/components/charts/line-chart";
+import { DeadlineOverview } from "@/components/deadline-overview";
+import type { Deadline } from "@/components/deadline-overview";
+import type { ReportingDeadline } from "@/lib/types";
+import { WorkPlanSubmissionStatus } from "./work-plan-submission-status";
 
 const ACTIVITY_COLORS: Record<string, string> = {
   planned: "#94a3b8",
@@ -30,6 +34,9 @@ export default async function ManagementDashboard() {
     { data: workPlans },
     { data: reportChallenges },
     { data: dataQualityChecks },
+    { data: trainers },
+    { data: deadlines },
+    { data: reportForDeadlines },
   ] = await Promise.all([
     supabase.from("strategic_objectives").select("*", { count: "exact", head: true }),
     supabase.from("reports").select("*", { count: "exact", head: true }).eq("status", "approved"),
@@ -41,9 +48,12 @@ export default async function ManagementDashboard() {
     supabase.from("outcome_indicators").select("outcome_id, target, current_value"),
     supabase.from("reports").select("status, department_id, created_at").order("created_at"),
     supabase.from("departments").select("id, name").order("name"),
-    supabase.from("work_plans").select("status, department_id"),
+    supabase.from("work_plans").select("status, department_id, created_by, period_name, period_type, created_at").order("created_at", { ascending: false }),
     supabase.from("reports").select("challenges").not("challenges", "is", null),
     supabase.from("data_quality_checks").select("severity, resolved, check_type"),
+    supabase.from("users").select("id, full_name, email, department_id, departments(name)").eq("role", "department_user").order("full_name"),
+    supabase.from("reporting_deadlines").select("*, departments(name)").order("due_date"),
+    supabase.from("reports").select("department_id, reporting_period_name").neq("status", "draft"),
   ]);
 
   // Indicator achievement % bar chart
@@ -114,6 +124,17 @@ export default async function ManagementDashboard() {
   const openQualityChecks = (dataQualityChecks ?? []).filter((check) => !check.resolved).length;
   const highQualityChecks = (dataQualityChecks ?? []).filter((check) => !check.resolved && check.severity === "high").length;
 
+
+  // Enrich deadlines with submission status
+  const reportPeriods = new Set(
+    (reportForDeadlines ?? []).map((r) => r.department_id + "::" + r.reporting_period_name.toLowerCase().trim())
+  );
+  const enrichedDeadlines = (deadlines ?? []).map((d) => ({
+    ...d,
+    has_submission: reportPeriods.has(d.department_id + "::" + d.reporting_period_name.toLowerCase().trim()),
+  }));
+  const overdueDeadlines = enrichedDeadlines.filter((d) => !d.has_submission);
+
   const stats = [
     { label: "Strategic Objectives", value: objectiveCount ?? 0, icon: Target },
     { label: "Approved Reports", value: approvedReports ?? 0, icon: FileCheck },
@@ -142,6 +163,12 @@ export default async function ManagementDashboard() {
           </Card>
         ))}
       </div>
+
+      {overdueDeadlines.length > 0 && (
+        <DeadlineOverview deadlines={overdueDeadlines} compact title="Overdue & Upcoming Deadlines" />
+      )}
+
+      <WorkPlanSubmissionStatus trainers={trainers ?? []} workPlans={workPlans ?? []} />
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card>

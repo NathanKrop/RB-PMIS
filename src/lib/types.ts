@@ -11,6 +11,7 @@ export type RiskStatus = "open" | "mitigating" | "escalated" | "closed";
 export interface Department {
   id: string;
   name: string;
+  parent_department_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -82,6 +83,7 @@ export interface Output {
 export interface WorkPlan {
   id: string;
   department_id: string;
+  created_by: string | null;
   period_type: PeriodType;
   period_name: string;
   status: WorkPlanStatus;
