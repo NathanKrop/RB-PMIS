@@ -156,6 +156,12 @@ export default async function ReportsPage() {
                       <p className="mt-0.5">{r.next_period_priorities}</p>
                     </div>
                   )}
+                  {r.status === "rejected" && r.rejection_reason && (
+                    <div className="rounded-md border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive">
+                      <p className="text-xs font-medium uppercase tracking-wide">Rejection Comment</p>
+                      <p className="mt-1 whitespace-pre-line">{r.rejection_reason}</p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}

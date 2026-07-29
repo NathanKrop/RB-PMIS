@@ -238,6 +238,7 @@ export interface Report {
   adaptive_actions: string | null;
   lessons_learned: string | null;
   next_period_priorities: string | null;
+  rejection_reason: string | null;
   status: ReportStatus;
   created_at: string;
   updated_at: string;

@@ -135,32 +135,67 @@ export async function createReport(formData: FormData) {
 
 export async function submitReport(id: string) {
   const supabase = await createClient();
-  const { data: report } = await supabase.from("reports").select("reporting_period_name, department_id").eq("id", id).single();
+  const { data: report } = await supabase.from("reports").select("reporting_period_name, department_id, outcome_progress, key_results, challenges, adaptive_actions, lessons_learned, next_period_priorities").eq("id", id).single();
+  if (!report) return { error: "Report not found" };
+
+  const missingFields: string[] = [];
+  if (!report.outcome_progress) missingFields.push("Outcome Progress");
+  if (!report.key_results) missingFields.push("Key Results");
+  if (!report.challenges) missingFields.push("Challenges");
+  if (!report.adaptive_actions) missingFields.push("Adaptive Actions");
+  if (!report.lessons_learned) missingFields.push("Lessons Learned");
+  if (!report.next_period_priorities) missingFields.push("Next Period Priorities");
+
+  if (missingFields.length > 0) {
+    return { error: `Report cannot be submitted until the following fields are completed: ${missingFields.join(", ")}.` };
+  }
+
   const { error } = await supabase.from("reports").update({ status: "submitted" }).eq("id", id);
   if (error) return { error: error.message };
 
   // Notify all reporting officers
-  if (report) {
-    const { data: officers } = await supabase.from("users").select("id").eq("role", "reporting_officer");
-    for (const officer of officers ?? []) {
-      await createNotification(officer.id, "New Report Submitted", `A report for "${report.reporting_period_name}" has been submitted for review.`, "info");
-    }
+  const { data: officers } = await supabase.from("users").select("id").eq("role", "reporting_officer");
+  for (const officer of officers ?? []) {
+    await createNotification(officer.id, "New Report Submitted", `A report for "${report.reporting_period_name}" has been submitted for review.`, "info");
   }
 
   revalidatePath("/dashboard/department/reports");
   revalidatePath("/dashboard/officer/reports");
 }
 
-export async function updateReportStatus(id: string, status: string) {
+export async function updateReportStatus(id: string, status: string, rejectionReason?: string) {
   const supabase = await createClient();
   const { data: report } = await supabase.from("reports").select("reporting_period_name, department_id").eq("id", id).single();
-  const { error } = await supabase.from("reports").update({ status }).eq("id", id);
+  if (!report) return { error: "Report not found" };
+
+  if (status === "rejected" && (!rejectionReason || !rejectionReason.trim())) {
+    return { error: "A rejection reason is required when rejecting a report." };
+  }
+
+  const { error } = await supabase.rpc("update_report_status", {
+    report_id: id,
+    new_status: status,
+    rejection_reason: status === "rejected" ? rejectionReason ?? null : null,
+  });
   if (error) return { error: error.message };
 
-  // Notify trainers in the department
-  if (report) {
+  if (status === "reviewed") {
     const { data: trainers } = await supabase.from("users").select("id").eq("department_id", report.department_id).eq("role", "department_user");
-    const label = status === "approved" ? "approved" : status === "rejected" ? "rejected" : status;
+    for (const trainer of trainers ?? []) {
+      await createNotification(trainer.id, "Report Reviewed", `Your report "${report.reporting_period_name}" has been reviewed and is awaiting verification.`, "info");
+    }
+  }
+
+  if (status === "verified") {
+    const { data: managers } = await supabase.from("users").select("id").eq("role", "management");
+    for (const manager of managers ?? []) {
+      await createNotification(manager.id, "Report Verified", `A report for "${report.reporting_period_name}" is ready for approval.`, "info");
+    }
+  }
+
+  if (status === "approved" || status === "rejected") {
+    const { data: trainers } = await supabase.from("users").select("id").eq("department_id", report.department_id).eq("role", "department_user");
+    const label = status === "approved" ? "approved" : "rejected";
     for (const trainer of trainers ?? []) {
       await createNotification(trainer.id, `Report ${label.charAt(0).toUpperCase() + label.slice(1)}`, `Your report "${report.reporting_period_name}" has been ${label}.`, status === "rejected" ? "escalation" : "info");
     }
@@ -168,6 +203,7 @@ export async function updateReportStatus(id: string, status: string) {
 
   revalidatePath("/dashboard/officer/reports");
   revalidatePath("/dashboard/management/reports");
+  revalidatePath("/dashboard/department/reports");
 }
 
 // ── Evidence ──────────────────────────────────────────────────────────────────
@@ -212,6 +248,7 @@ export async function uploadEvidence(formData: FormData) {
       ["evidence_outputs", "output_id", formData.get("output_id")],
       ["evidence_indicators", "indicator_id", formData.get("indicator_id")],
       ["evidence_reports", "report_id", formData.get("report_id")],
+      ["evidence_activities", "activity_id", formData.get("activity_id")],
     ] as const;
     for (const [table, column, value] of links) {
       if (typeof value === "string" && value) await supabase.from(table).insert({ evidence_id: evidence.id, [column]: value });
@@ -542,6 +579,17 @@ export async function updateUserDepartment(userId: string, departmentId: string)
   const { error } = await supabase.from("users").update({ department_id: departmentId }).eq("id", userId);
   if (error) return { error: error.message };
   revalidatePath("/dashboard/officer/departments");
+}
+
+export async function runDeadlineScheduler() {
+  const res = await fetch("/api/automation/deadlines", {
+    method: "POST",
+  });
+  if (!res.ok) {
+    const payload = await res.json();
+    return { error: payload?.error ?? "Scheduler failed" };
+  }
+  return await res.json();
 }
 
 export async function createReportingDeadline(formData: FormData) {

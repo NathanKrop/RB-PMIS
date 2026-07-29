@@ -5,6 +5,7 @@ import { DonutChart } from "@/components/charts/donut-chart";
 import { SimpleBarChart } from "@/components/charts/bar-chart";
 import { DeadlineOverview } from "@/components/deadline-overview";
 import { EvidenceCompletenessOverview } from "@/components/evidence-completeness";
+import { DataFreshnessCard } from "@/components/data-freshness-card";
 import type { Deadline } from "@/components/deadline-overview";
 import type { ReportingDeadline } from "@/lib/types";
 
@@ -46,15 +47,25 @@ export default async function DepartmentDashboard() {
     { data: indicators },
     { data: deadlines },
     { data: allReports },
+    { data: latestActivity },
+    { data: latestReport },
+    { data: latestEvidence },
+    { data: latestWorkPlan },
+    { count: unresolvedDataQualityChecks },
   ] = await Promise.all([
-    supabase.from("activities").select("status").eq("department_id", deptId),
+    supabase.from("activities").select("id, status").eq("department_id", deptId),
     supabase.from("reports").select("status").eq("department_id", deptId),
-    supabase.from("evidence").select("*", { count: "exact", head: true }).eq("uploaded_by", user!.id),
+    supabase.from("evidence").select("*", { count: "exact", head: true }).eq("department_id", deptId),
     supabase.from("activities").select("*", { count: "exact", head: true }).eq("department_id", deptId).eq("status", "completed"),
     supabase.from("work_plans").select("*", { count: "exact", head: true }).eq("department_id", deptId),
     supabase.from("indicators").select("title, target, current_value, activity_id, activities!inner(department_id)").eq("activities.department_id", deptId),
     supabase.from("reporting_deadlines").select("*, departments(name)").eq("department_id", deptId).order("due_date"),
-    supabase.from("reports").select("department_id, reporting_period_name").neq("status", "draft"),
+    supabase.from("reports").select("department_id, reporting_period_name").eq("department_id", deptId).neq("status", "draft"),
+    supabase.from("activities").select("updated_at").eq("department_id", deptId).order("updated_at", { ascending: false }).limit(1).single(),
+    supabase.from("reports").select("updated_at").eq("department_id", deptId).order("updated_at", { ascending: false }).limit(1).single(),
+    supabase.from("evidence").select("updated_at").eq("department_id", deptId).order("updated_at", { ascending: false }).limit(1).single(),
+    supabase.from("work_plans").select("updated_at").eq("department_id", deptId).order("updated_at", { ascending: false }).limit(1).single(),
+    supabase.from("data_quality_checks").select("*", { count: "exact", head: true }).eq("department_id", deptId).eq("resolved", false),
   ]);
 
   const reportPeriods = new Set(
@@ -67,6 +78,18 @@ export default async function DepartmentDashboard() {
   }));
 
   const pendingDeadlines = enrichedDeadlines.filter((d) => !d.has_submission);
+
+  const completedActivityIds = (activities ?? []).filter((a) => a.status === "completed").map((a) => a.id);
+  const completedActivityEvidenceCount = completedActivityIds.length > 0
+    ? await supabase.from("evidence").select("*", { count: "exact", head: true }).in("activity_id", completedActivityIds).then((res) => res.count ?? 0)
+    : 0;
+  const evidenceCompletenessRate = completedActivityIds.length > 0
+    ? Math.round((completedActivityEvidenceCount / completedActivityIds.length) * 100)
+    : 0;
+  const openQualityChecks = unresolvedDataQualityChecks ?? 0;
+
+  const freshnessTimestamps = [latestActivity?.updated_at, latestReport?.updated_at, latestEvidence?.updated_at, latestWorkPlan?.updated_at].filter(Boolean) as string[];
+  const latestUpdatedAt = freshnessTimestamps.length > 0 ? freshnessTimestamps.sort().reverse()[0] : null;
 
   const activityStatusCounts = (activities ?? []).reduce<Record<string, number>>((acc, a) => {
     acc[a.status] = (acc[a.status] ?? 0) + 1;
@@ -131,6 +154,37 @@ export default async function DepartmentDashboard() {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-4">
+        <DataFreshnessCard updatedAt={latestUpdatedAt} />
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Evidence Completeness Rate</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{evidenceCompletenessRate}%</p>
+            <p className="text-sm text-muted-foreground mt-1">Completed activities with evidence</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">On-time reporting compliance</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{pendingDeadlines.length === 0 ? "100%" : `${Math.max(0, 100 - Math.round((pendingDeadlines.length / (enrichedDeadlines.length || 1)) * 100))}%`}</p>
+            <p className="text-sm text-muted-foreground mt-1">Reports submitted before deadline</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Open Data Quality Issues</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{openQualityChecks}</p>
+            <p className="text-sm text-muted-foreground mt-1">Unresolved departmental checks</p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Deadline overview widget */}

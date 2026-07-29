@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { DeadlineOverview } from "@/components/deadline-overview";
 import { DeadlineForm } from "./deadline-form";
+import { DeadlineSchedulerButton } from "./deadline-scheduler-button";
 import type { ReportingDeadline } from "@/lib/types";
 
 function enrichWithSubmissionStatus(
@@ -31,17 +32,25 @@ export default async function DeadlinesPage() {
   // Group by due status
   const overdue = enriched.filter((d) => !d.has_submission);
   const submitted = enriched.filter((d) => d.has_submission);
+  const nowMs = new Date().getTime();
+  const dueSoonCount = overdue.filter((d) => {
+    const days = (new Date(d.due_date).getTime() - nowMs) / (1000 * 60 * 60 * 24);
+    return days >= 0 && days <= 7;
+  }).length;
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Reporting Deadlines</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Track upcoming, overdue, and completed reporting deadlines across departments.
           </p>
         </div>
-        <DeadlineForm departments={departments ?? []} />
+        <div className="flex flex-wrap gap-2 items-center">
+          <DeadlineSchedulerButton />
+          <DeadlineForm departments={departments ?? []} />
+        </div>
       </div>
 
       {enriched.length === 0 ? (
@@ -73,12 +82,7 @@ export default async function DeadlinesPage() {
             </div>
             <div className="rounded-lg border bg-card p-4">
               <p className="text-sm text-muted-foreground">Due Soon (7 days)</p>
-              <p className="text-2xl font-bold text-amber-500">
-                {overdue.filter((d) => {
-                  const days = (new Date(d.due_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
-                  return days >= 0 && days <= 7;
-                }).length}
-              </p>
+              <p className="text-2xl font-bold text-amber-500">{dueSoonCount}</p>
             </div>
             <div className="rounded-lg border bg-card p-4">
               <p className="text-sm text-muted-foreground">Submitted</p>

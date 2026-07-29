@@ -27,7 +27,7 @@ BEGIN
       INSERT INTO public.data_quality_checks (
         checked_by, department_id, check_type, entity, issue, severity
       ) VALUES (
-        NEW.department_id,
+        auth.uid(),
         NEW.department_id,
         'completeness',
         'activity:' || NEW.id,
@@ -83,7 +83,7 @@ BEGIN
       INSERT INTO public.data_quality_checks (
         checked_by, department_id, check_type, entity, issue, severity
       ) VALUES (
-        NEW.department_id,
+        auth.uid(),
         NEW.department_id,
         'completeness',
         'report:' || NEW.id,

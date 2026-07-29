@@ -58,9 +58,15 @@ export async function fetchReportData(reportId: string): Promise<ReportExportDat
     outputs: Array.isArray(a.outputs) ? (a.outputs[0] ?? null) : a.outputs,
   }));
 
-  const { data: indicators } = await supabase
+  let indicatorQuery = supabase
     .from("outcome_indicators")
     .select("title, unit, baseline, target, current_value");
+
+  if (report.department_id) {
+    indicatorQuery = indicatorQuery.or(`responsible_department_id.is.null,responsible_department_id.eq.${report.department_id}`);
+  }
+
+  const { data: indicators } = await indicatorQuery;
 
   return {
     report,

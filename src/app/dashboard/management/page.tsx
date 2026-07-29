@@ -5,8 +5,7 @@ import { DonutChart } from "@/components/charts/donut-chart";
 import { SimpleBarChart } from "@/components/charts/bar-chart";
 import { TrendLineChart } from "@/components/charts/line-chart";
 import { DeadlineOverview } from "@/components/deadline-overview";
-import type { Deadline } from "@/components/deadline-overview";
-import type { ReportingDeadline } from "@/lib/types";
+import { DataFreshnessCard } from "@/components/data-freshness-card";
 import { WorkPlanSubmissionStatus } from "./work-plan-submission-status";
 
 const ACTIVITY_COLORS: Record<string, string> = {
@@ -37,6 +36,10 @@ export default async function ManagementDashboard() {
     { data: trainers },
     { data: deadlines },
     { data: reportForDeadlines },
+    { data: latestActivity },
+    { data: latestReport },
+    { data: latestEvidence },
+    { data: latestDeadline },
   ] = await Promise.all([
     supabase.from("strategic_objectives").select("*", { count: "exact", head: true }),
     supabase.from("reports").select("*", { count: "exact", head: true }).eq("status", "approved"),
@@ -54,6 +57,10 @@ export default async function ManagementDashboard() {
     supabase.from("users").select("id, full_name, email, department_id, departments(name)").eq("role", "department_user").order("full_name"),
     supabase.from("reporting_deadlines").select("*, departments(name)").order("due_date"),
     supabase.from("reports").select("department_id, reporting_period_name").neq("status", "draft"),
+    supabase.from("activities").select("updated_at").order("updated_at", { ascending: false }).limit(1).single(),
+    supabase.from("reports").select("updated_at").order("updated_at", { ascending: false }).limit(1).single(),
+    supabase.from("evidence").select("updated_at").order("updated_at", { ascending: false }).limit(1).single(),
+    supabase.from("reporting_deadlines").select("updated_at").order("updated_at", { ascending: false }).limit(1).single(),
   ]);
 
   // Indicator achievement % bar chart
@@ -107,6 +114,20 @@ export default async function ManagementDashboard() {
     Submitted: (reports ?? []).filter((r) => r.created_at?.startsWith(key) && r.status !== "draft").length,
     Approved: (reports ?? []).filter((r) => r.created_at?.startsWith(key) && r.status === "approved").length,
   }));
+
+  const qualityIssues = dataQualityChecks ?? [];
+  const unresolvedQualityIssues = qualityIssues.filter((check) => !check.resolved).length;
+  const qualityErrorRate = qualityIssues.length > 0 ? Math.round((unresolvedQualityIssues / qualityIssues.length) * 100) : 0;
+
+  const departmentsWithPlan = (departments ?? []).filter((d) =>
+    (workPlans ?? []).some((plan) => plan.department_id === d.id && ["submitted", "approved"].includes(plan.status))
+  ).length;
+  const planCoveragePct = (departments ?? []).length > 0
+    ? Math.round((departmentsWithPlan / departments!.length) * 100)
+    : 0;
+
+  const freshnessTimestamps = [latestActivity?.updated_at, latestReport?.updated_at, latestEvidence?.updated_at, latestDeadline?.updated_at].filter(Boolean) as string[];
+  const latestUpdatedAt = freshnessTimestamps.length > 0 ? freshnessTimestamps.sort().reverse()[0] : null;
 
   // Recurring challenges: normalise semicolon, newline, and comma-separated entries.
   const challengeCounts = new Map<string, number>();
@@ -162,6 +183,28 @@ export default async function ManagementDashboard() {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <DataFreshnessCard updatedAt={latestUpdatedAt} />
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Work Plan Coverage</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{planCoveragePct}%</p>
+            <p className="text-sm text-muted-foreground mt-1">Departments with submitted or approved plans</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Data Quality Error Rate</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{qualityErrorRate}%</p>
+            <p className="text-sm text-muted-foreground mt-1">Open issues vs all checks</p>
+          </CardContent>
+        </Card>
       </div>
 
       {overdueDeadlines.length > 0 && (

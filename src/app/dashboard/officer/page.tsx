@@ -1,13 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { DeadlineOverview } from "@/components/deadline-overview";
-import type { Deadline } from "@/components/deadline-overview";
-import type { ReportingDeadline } from "@/lib/types";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, FileText, Upload, BarChart2 } from "lucide-react";
 import { DonutChart } from "@/components/charts/donut-chart";
 import { SimpleBarChart } from "@/components/charts/bar-chart";
 import { TrendLineChart } from "@/components/charts/line-chart";
+import { DataFreshnessCard } from "@/components/data-freshness-card";
 
 const EVIDENCE_COLORS: Record<string, string> = {
   pending: "#f59e0b",
@@ -40,6 +39,12 @@ export default async function OfficerDashboard() {
     { data: activities },
     { data: deadlines },
     { data: reportForDeadlines },
+    { count: unresolvedQualityChecks },
+    { count: totalQualityChecks },
+    { data: latestReport },
+    { data: latestActivity },
+    { data: latestEvidence },
+    { data: latestDeadline },
   ] = await Promise.all([
     supabase.from("departments").select("*", { count: "exact", head: true }),
     supabase.from("reports").select("*", { count: "exact", head: true }).eq("status", "submitted"),
@@ -52,6 +57,12 @@ export default async function OfficerDashboard() {
     supabase.from("activities").select("status, department_id"),
     supabase.from("reporting_deadlines").select("*, departments(name)").order("due_date"),
     supabase.from("reports").select("department_id, reporting_period_name").neq("status", "draft"),
+    supabase.from("data_quality_checks").select("*", { count: "exact", head: true }).eq("resolved", false),
+    supabase.from("data_quality_checks").select("*", { count: "exact", head: true }),
+    supabase.from("reports").select("updated_at").order("updated_at", { ascending: false }).limit(1).single(),
+    supabase.from("activities").select("updated_at").order("updated_at", { ascending: false }).limit(1).single(),
+    supabase.from("evidence").select("updated_at").order("updated_at", { ascending: false }).limit(1).single(),
+    supabase.from("reporting_deadlines").select("updated_at").order("updated_at", { ascending: false }).limit(1).single(),
   ]);
 
   // Reports per department
@@ -123,6 +134,12 @@ export default async function OfficerDashboard() {
     };
   }).filter((d) => d.value > 0);
 
+  const freshnessTimestamps = [latestReport?.updated_at, latestActivity?.updated_at, latestEvidence?.updated_at, latestDeadline?.updated_at].filter(Boolean) as string[];
+  const latestUpdatedAt = freshnessTimestamps.length > 0 ? freshnessTimestamps.sort().reverse()[0] : null;
+  const qualityErrorRate = totalQualityChecks && totalQualityChecks > 0
+    ? Math.round(((unresolvedQualityChecks ?? 0) / totalQualityChecks) * 100)
+    : 0;
+
   const stats = [
     { label: "Departments", value: deptCount ?? 0, icon: Building2 },
     { label: "Pending Reports", value: pendingReports ?? 0, icon: FileText },
@@ -149,6 +166,39 @@ export default async function OfficerDashboard() {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <DataFreshnessCard updatedAt={latestUpdatedAt} />
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">On-time Reporting Compliance</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">
+              {enrichedDeadlines.length === 0 ? "100%" : `${Math.max(0, 100 - Math.round((overdueDeadlines.length / enrichedDeadlines.length) * 100))}%`}
+            </p>
+            <p className="text-sm text-muted-foreground mt-1">Deadlines met across departments</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Work Plan Coverage</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{deptWorkPlanComparison.length}</p>
+            <p className="text-sm text-muted-foreground mt-1">Departments with work plan tracking</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Data Quality Error Rate</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{qualityErrorRate}%</p>
+            <p className="text-sm text-muted-foreground mt-1">Unresolved issues fraction</p>
+          </CardContent>
+        </Card>
       </div>
 
       {overdueDeadlines.length > 0 && (
