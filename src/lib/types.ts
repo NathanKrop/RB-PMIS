@@ -232,6 +232,7 @@ export interface Report {
   department_id: string;
   reporting_period: PeriodType;
   reporting_period_name: string;
+  work_plan_id: string | null;
   outcome_progress: string | null;
   key_results: string | null;
   challenges: string | null;
@@ -242,6 +243,18 @@ export interface Report {
   status: ReportStatus;
   created_at: string;
   updated_at: string;
+}
+
+export interface ReportDraft {
+  work_plan_id: string;
+  reporting_period: PeriodType;
+  reporting_period_name: string;
+  outcome_progress: string;
+  key_results: string;
+  challenges: string;
+  adaptive_actions: string;
+  lessons_learned: string;
+  next_period_priorities: string;
 }
 
 export interface ReportingDeadline {

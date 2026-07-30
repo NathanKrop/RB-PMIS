@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { EvidenceUploadForm } from "./evidence-upload-form";
 import { EvidenceGallery } from "@/components/evidence-gallery";
 import type { Evidence } from "@/lib/types";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 
 export default async function EvidencePage() {
   const supabase = await createClient();
@@ -31,7 +32,10 @@ export default async function EvidencePage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Evidence</h1>
+          <Breadcrumb compact className="mb-3">
+          <BreadcrumbItem current>Evidence</BreadcrumbItem>
+        </Breadcrumb>
+        <h1 className="text-2xl font-semibold">Evidence</h1>
           <p className="text-sm text-muted-foreground mt-1">Upload and manage supporting evidence files</p>
         </div>
         <EvidenceUploadForm activities={activities ?? []} objectives={objectives ?? []} outcomes={outcomes ?? []} outputs={outputs ?? []} indicators={indicators ?? []} reports={reports ?? []} />

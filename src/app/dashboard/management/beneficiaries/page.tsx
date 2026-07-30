@@ -5,6 +5,7 @@ import { DonutChart } from "@/components/charts/donut-chart";
 import { SimpleBarChart } from "@/components/charts/bar-chart";
 import { Users, MapPin } from "lucide-react";
 import type { Beneficiary } from "@/lib/types";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 
 export default async function ManagementBeneficiariesPage() {
   const supabase = await createClient();
@@ -34,6 +35,9 @@ export default async function ManagementBeneficiariesPage() {
   return (
     <div className="space-y-6">
       <div>
+        <Breadcrumb compact className="mb-3">
+          <BreadcrumbItem current>Beneficiaries</BreadcrumbItem>
+        </Breadcrumb>
         <h1 className="text-2xl font-semibold">Beneficiaries</h1>
         <p className="text-sm text-muted-foreground mt-1">Organisation-wide beneficiary demographics and impact tracking</p>
       </div>

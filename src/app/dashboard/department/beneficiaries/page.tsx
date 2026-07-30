@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { BeneficiaryForm } from "./beneficiary-form";
 import { Users, UserCheck, MapPin } from "lucide-react";
 import type { Beneficiary } from "@/lib/types";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 
 export default async function DepartmentBeneficiariesPage() {
   const supabase = await createClient();
@@ -25,7 +26,10 @@ export default async function DepartmentBeneficiariesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Beneficiaries</h1>
+          <Breadcrumb compact className="mb-3">
+          <BreadcrumbItem current>Beneficiaries</BreadcrumbItem>
+        </Breadcrumb>
+        <h1 className="text-2xl font-semibold">Beneficiaries</h1>
           <p className="text-sm text-muted-foreground mt-1">Register and track beneficiaries for your activities</p>
         </div>
         <BeneficiaryForm activities={activities ?? []} />

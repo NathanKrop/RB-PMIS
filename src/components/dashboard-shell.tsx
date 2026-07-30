@@ -82,13 +82,9 @@ export function DashboardShell({ profile, notifications = [], children }: { prof
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
   const role = profile?.role ?? "department_user";
-  const isPreview = pathname.startsWith("/preview");
   const roleSlug = { department_user: "department", reporting_officer: "officer", management: "management" }[role];
-  const base = isPreview ? `/preview/${roleSlug}` : `/dashboard/${roleSlug}`;
-  const nav = navByRole[role].map((item) => ({
-    ...item,
-    href: item.href.replace(`/dashboard/${roleSlug}`, base),
-  }));
+  const base = `/dashboard/${roleSlug}`;
+  const nav = navByRole[role].map((item) => item);
 
   if (!profile) {
     return <div className="min-h-screen flex items-center justify-center">Invalid profile data.</div>;
@@ -135,14 +131,14 @@ export function DashboardShell({ profile, notifications = [], children }: { prof
           {profile.departments?.name && (
             <p className="text-xs text-muted-foreground truncate">{profile.departments.name}</p>
           )}
-          <form action={isPreview ? undefined : logout} className="pt-2">
+          <form action={logout} className="pt-2">
             <Button
               variant="ghost"
               size="sm"
               className="w-full justify-start gap-2 text-muted-foreground"
-              {...(isPreview ? { type: "button", onClick: () => window.location.href = "/auth/login" } : { type: "submit" })}
+              type="submit"
             >
-              <LogOut className="h-4 w-4" /> {isPreview ? "Exit Preview" : "Sign out"}
+              <LogOut className="h-4 w-4" /> Sign out
             </Button>
           </form>
         </div>

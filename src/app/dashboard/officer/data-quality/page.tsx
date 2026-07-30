@@ -6,6 +6,7 @@ import { AlertTriangle, CheckCircle2, ShieldAlert, Copy, ClipboardCheck } from "
 import { ResolveCheckButton } from "./resolve-button";
 import { LogCheckButton } from "./log-check-button";
 import type { DataQualityCheck } from "@/lib/types";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 
 const severityVariant: Record<string, "destructive" | "warning" | "secondary"> = {
   high: "destructive",
@@ -184,6 +185,9 @@ export default async function DataQualityPage() {
   return (
     <div className="space-y-6">
       <div>
+        <Breadcrumb compact className="mb-3">
+          <BreadcrumbItem current>Data Quality</BreadcrumbItem>
+        </Breadcrumb>
         <h1 className="text-2xl font-semibold">Data Quality</h1>
         <p className="text-sm text-muted-foreground mt-1">Completeness checks, anomaly detection, and duplicate detection</p>
       </div>

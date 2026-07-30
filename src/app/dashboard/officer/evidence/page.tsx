@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { EvidenceActions } from "./evidence-actions";
 import { Download, Eye } from "lucide-react";
 import type { Evidence } from "@/lib/types";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 
 type EvidenceUploader = {
   full_name: string | null;
@@ -45,6 +46,9 @@ export default async function OfficerEvidencePage() {
   return (
     <div className="space-y-6">
       <div>
+        <Breadcrumb compact className="mb-3">
+          <BreadcrumbItem current>Evidence Review</BreadcrumbItem>
+        </Breadcrumb>
         <h1 className="text-2xl font-semibold">Evidence Review</h1>
         <p className="text-sm text-muted-foreground mt-1">Verify or reject submitted evidence files</p>
       </div>

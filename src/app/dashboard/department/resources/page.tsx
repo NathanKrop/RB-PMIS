@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ResourceForm } from "./resource-form";
 import type { Resource } from "@/lib/types";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 
 const categoryVariant: Record<string, "default" | "secondary" | "outline" | "warning"> = {
   human: "default",
@@ -31,7 +32,10 @@ export default async function DepartmentResourcesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Resource Planning</h1>
+          <Breadcrumb compact className="mb-3">
+          <BreadcrumbItem current>Resource Planning</BreadcrumbItem>
+        </Breadcrumb>
+        <h1 className="text-2xl font-semibold">Resource Planning</h1>
           <p className="text-sm text-muted-foreground mt-1">Track planned vs actual resource utilization</p>
         </div>
         <ResourceForm activities={activities ?? []} />

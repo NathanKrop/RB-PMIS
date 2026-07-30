@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { KnowledgeSearch } from "@/components/knowledge-search";
 import { KnowledgeForm } from "./knowledge-form";
 import type { KnowledgeItem } from "@/lib/types";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 
 export default async function OfficerKnowledgePage() {
   const supabase = await createClient();
@@ -18,7 +19,10 @@ export default async function OfficerKnowledgePage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Knowledge Repository</h1>
+          <Breadcrumb compact className="mb-3">
+          <BreadcrumbItem current>Knowledge Repository</BreadcrumbItem>
+        </Breadcrumb>
+        <h1 className="text-2xl font-semibold">Knowledge Repository</h1>
           <p className="text-sm text-muted-foreground mt-1">Manage lessons learned, best practices, case studies, and success stories</p>
         </div>
         <KnowledgeForm departments={departments ?? []} />

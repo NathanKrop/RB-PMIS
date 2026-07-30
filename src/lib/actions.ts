@@ -120,6 +120,7 @@ export async function createReport(formData: FormData) {
     department_id: profile.department_id,
     reporting_period: formData.get("reporting_period") as string,
     reporting_period_name: formData.get("reporting_period_name") as string,
+    work_plan_id: formData.get("work_plan_id") as string || null,
     outcome_progress: formData.get("outcome_progress") as string || null,
     key_results: formData.get("key_results") as string || null,
     challenges: formData.get("challenges") as string || null,

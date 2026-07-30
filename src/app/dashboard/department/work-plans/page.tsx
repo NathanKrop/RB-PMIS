@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 import { WorkPlanForm } from "./work-plan-form";
 import { ActivityForm } from "./activity-form";
 import { WorkPlanActions } from "./work-plan-actions";
@@ -47,6 +48,9 @@ export default async function WorkPlansPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
+          <Breadcrumb compact className="mb-3">
+            <BreadcrumbItem current>Work Plans</BreadcrumbItem>
+          </Breadcrumb>
           <h1 className="text-2xl font-semibold">Work Plans</h1>
           <p className="text-sm text-muted-foreground mt-1">Manage your department&apos;s work plans and activities</p>
         </div>

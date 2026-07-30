@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { DepartmentForm } from "./department-form";
 import { UserDepartmentForm } from "./user-department-form";
 import type { Department, UserProfile } from "@/lib/types";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 
 export default async function DepartmentsPage() {
   const supabase = await createClient();
@@ -33,7 +34,10 @@ export default async function DepartmentsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Departments</h1>
+          <Breadcrumb compact className="mb-3">
+          <BreadcrumbItem current>Departments</BreadcrumbItem>
+        </Breadcrumb>
+        <h1 className="text-2xl font-semibold">Departments</h1>
           <p className="text-sm text-muted-foreground mt-1">Manage departments and user assignments</p>
         </div>
         <DepartmentForm />

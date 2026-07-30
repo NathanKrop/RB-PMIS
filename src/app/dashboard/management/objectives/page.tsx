@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Department, StrategicObjective } from "@/lib/types";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 
 export default async function ManagementObjectivesPage() {
   const supabase = await createClient();
@@ -13,6 +14,9 @@ export default async function ManagementObjectivesPage() {
   return (
     <div className="space-y-6">
       <div>
+        <Breadcrumb compact className="mb-3">
+          <BreadcrumbItem current>Strategic Objectives</BreadcrumbItem>
+        </Breadcrumb>
         <h1 className="text-2xl font-semibold">Strategic Objectives</h1>
         <p className="mt-1 text-sm text-muted-foreground">Organisation-wide strategic objectives and responsible departments</p>
       </div>

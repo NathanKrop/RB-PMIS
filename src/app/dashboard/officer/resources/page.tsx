@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { SimpleBarChart } from "@/components/charts/bar-chart";
 import { ResourceForm } from "../../department/resources/resource-form";
 import type { Resource } from "@/lib/types";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 
 const categoryVariant: Record<string, "default" | "secondary" | "outline" | "warning"> = {
   human: "default", financial: "warning", material: "secondary", equipment: "outline",
@@ -37,7 +38,10 @@ export default async function OfficerResourcesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Resource Planning</h1>
+          <Breadcrumb compact className="mb-3">
+          <BreadcrumbItem current>Resource Planning</BreadcrumbItem>
+        </Breadcrumb>
+        <h1 className="text-2xl font-semibold">Resource Planning</h1>
           <p className="text-sm text-muted-foreground mt-1">Organisation-wide resource allocation and utilization</p>
         </div>
         <ResourceForm activities={activities ?? []} departments={departments ?? []} showDeptSelect />

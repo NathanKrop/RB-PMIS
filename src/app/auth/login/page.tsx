@@ -24,12 +24,6 @@ const EyeOffIcon = () => (
   </svg>
 );
 
-const previews = [
-  { label: "Department User", href: "/preview/department" },
-  { label: "Reporting Officer", href: "/preview/officer" },
-  { label: "Management", href: "/preview/management" },
-];
-
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -91,25 +85,6 @@ export default function LoginPage() {
               </Button>
             </CardFooter>
           </form>
-        </Card>
-
-        {/* Preview dashboards without auth */}
-        <Card className="border-dashed">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Preview Dashboards</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {previews.map(({ label, href }) => (
-              <Button
-                key={href}
-                variant="outline"
-                className="w-full"
-                onClick={() => router.push(href)}
-              >
-                {label}
-              </Button>
-            ))}
-          </CardContent>
         </Card>
       </div>
     </div>

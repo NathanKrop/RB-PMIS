@@ -42,6 +42,9 @@ export async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const { pathname } = request.nextUrl;
 
+  // Allow the web manifest to be fetched without authentication
+  if (pathname === "/manifest.webmanifest") return supabaseResponse;
+
   // Allow preview routes without auth
   if (pathname.startsWith("/preview")) return supabaseResponse;
 
@@ -96,5 +99,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.svg).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|.*\\.svg).*)"],
 };

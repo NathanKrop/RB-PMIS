@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Activity, Department, Output } from "@/lib/types";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 
 const statusVariant: Record<string, "default" | "secondary" | "success" | "warning" | "destructive" | "outline"> = {
   planned: "secondary", in_progress: "warning", completed: "success", delayed: "destructive", cancelled: "outline",
@@ -20,6 +21,9 @@ export default async function ManagementActivitiesPage() {
   return (
     <div className="space-y-6">
       <div>
+        <Breadcrumb compact className="mb-3">
+          <BreadcrumbItem current>Activities</BreadcrumbItem>
+        </Breadcrumb>
         <h1 className="text-2xl font-semibold">Activities</h1>
         <p className="mt-1 text-sm text-muted-foreground">View activity delivery and implementation status across departments</p>
       </div>

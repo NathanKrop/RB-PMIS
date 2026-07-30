@@ -42,11 +42,6 @@ export async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const { pathname } = request.nextUrl;
 
-  // Allow preview routes without auth
-  if (pathname.startsWith("/preview")) {
-    return supabaseResponse;
-  }
-
   // Redirect unauthenticated users to login
   if (!user && !pathname.startsWith("/auth")) {
     return NextResponse.redirect(new URL("/auth/login", request.url));

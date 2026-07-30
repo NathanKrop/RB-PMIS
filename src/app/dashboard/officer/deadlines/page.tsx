@@ -3,6 +3,7 @@ import { DeadlineOverview } from "@/components/deadline-overview";
 import { DeadlineForm } from "./deadline-form";
 import { DeadlineSchedulerButton } from "./deadline-scheduler-button";
 import type { ReportingDeadline } from "@/lib/types";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 
 function enrichWithSubmissionStatus(
   deadlines: (ReportingDeadline & { departments: { name: string } | null })[],
@@ -42,7 +43,10 @@ export default async function DeadlinesPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Reporting Deadlines</h1>
+          <Breadcrumb compact className="mb-3">
+          <BreadcrumbItem current>Reporting Deadlines</BreadcrumbItem>
+        </Breadcrumb>
+        <h1 className="text-2xl font-semibold">Reporting Deadlines</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Track upcoming, overdue, and completed reporting deadlines across departments.
           </p>

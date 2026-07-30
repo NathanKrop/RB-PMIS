@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ReviewMeetingForm } from "./review-meeting-form";
 import { ReflectionForm } from "./reflection-form";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 
 type ReviewActionItem = {
   id: string;
@@ -86,6 +87,9 @@ export default async function DepartmentReviewsPage() {
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-2">
+        <Breadcrumb compact className="mb-3">
+          <BreadcrumbItem current>Review Cycle</BreadcrumbItem>
+        </Breadcrumb>
         <h1 className="text-2xl font-semibold">Review Cycle</h1>
         <p className="text-sm text-muted-foreground">Track weekly review meetings and monthly reflections in one place.</p>
       </div>

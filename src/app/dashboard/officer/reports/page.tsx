@@ -6,6 +6,7 @@ import { ChevronRight } from "lucide-react";
 import { ReportStatusActions } from "./report-status-actions";
 import { ExportReportButtons } from "@/components/export-report-buttons";
 import type { Report } from "@/lib/types";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 
 const statusVariant: Record<string, "default" | "secondary" | "success" | "warning" | "destructive" | "outline"> = {
   draft: "secondary",
@@ -64,6 +65,9 @@ export default async function OfficerReportsPage() {
   return (
     <div className="space-y-8">
       <div>
+        <Breadcrumb compact className="mb-3">
+          <BreadcrumbItem current>Report</BreadcrumbItem>
+        </Breadcrumb>
         <h1 className="text-2xl font-semibold">Report</h1>
         <p className="text-sm text-muted-foreground mt-1">Review and approve department reports</p>
       </div>

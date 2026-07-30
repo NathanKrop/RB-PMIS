@@ -5,6 +5,7 @@ import { CheckCircle, ShieldCheck, Sparkles } from "lucide-react";
 import { ExportReportButtons } from "@/components/export-report-buttons";
 import { ReportStatusActions } from "@/app/dashboard/officer/reports/report-status-actions";
 import type { Report } from "@/lib/types";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 
 const statusVariant: Record<string, "default" | "secondary" | "success" | "warning" | "destructive" | "outline"> = {
   approved: "success",
@@ -41,7 +42,10 @@ export default async function ManagementReportsPage() {
     <div className="space-y-6">
       <div className="rounded-lg border-l-4 border-slate-300 bg-slate-50/60 p-4">
         <div>
-          <h1 className="text-2xl font-semibold">Report queue</h1>
+          <Breadcrumb compact className="mb-3">
+          <BreadcrumbItem current>Report queue</BreadcrumbItem>
+        </Breadcrumb>
+        <h1 className="text-2xl font-semibold">Report queue</h1>
           <p className="text-sm text-muted-foreground mt-1">
             Reviewed reports are ready for verification, verified reports are ready for final approval, and approved reports are finalized.
           </p>

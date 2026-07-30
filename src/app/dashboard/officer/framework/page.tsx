@@ -6,6 +6,7 @@ import { OutputForm } from "./output-form";
 import { IndicatorForm } from "./indicator-form";
 import { IndicatorEditForm } from "./indicator-edit-form";
 import type { StrategicObjective, Outcome, Output, OutcomeIndicator } from "@/lib/types";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 
 export default async function FrameworkPage() {
   const supabase = await createClient();
@@ -37,7 +38,10 @@ export default async function FrameworkPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Results Framework</h1>
+          <Breadcrumb compact className="mb-3">
+          <BreadcrumbItem current>Results Framework</BreadcrumbItem>
+        </Breadcrumb>
+        <h1 className="text-2xl font-semibold">Results Framework</h1>
           <p className="text-sm text-muted-foreground mt-1">Manage strategic objectives, outcomes, and outputs</p>
         </div>
         <ObjectiveForm departments={departments ?? []} />

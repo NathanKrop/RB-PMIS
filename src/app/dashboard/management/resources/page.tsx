@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SimpleBarChart } from "@/components/charts/bar-chart";
 import { DonutChart } from "@/components/charts/donut-chart";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 
 const CATEGORY_COLORS: Record<string, string> = {
   human: "#6366f1", financial: "#f59e0b", material: "#22c55e", equipment: "#64748b",
@@ -49,6 +50,9 @@ export default async function ManagementResourcesPage() {
   return (
     <div className="space-y-6">
       <div>
+        <Breadcrumb compact className="mb-3">
+          <BreadcrumbItem current>Resource Planning</BreadcrumbItem>
+        </Breadcrumb>
         <h1 className="text-2xl font-semibold">Resource Planning</h1>
         <p className="text-sm text-muted-foreground mt-1">Organisation-wide budget allocation and utilization overview</p>
       </div>
