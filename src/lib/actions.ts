@@ -208,6 +208,56 @@ export async function updateReportStatus(id: string, status: string, rejectionRe
 
 // ── Evidence ──────────────────────────────────────────────────────────────────
 
+export async function createReviewMeeting(formData: FormData) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+
+  const { data: profile } = await supabase.from("users").select("department_id").eq("id", user.id).single();
+  if (!profile?.department_id) return { error: "No department assigned" };
+
+  const { error } = await supabase.from("weekly_meetings").insert({
+    department_id: profile.department_id,
+    title: formData.get("title") as string,
+    meeting_date: formData.get("meeting_date") as string,
+    start_time: formData.get("start_time") as string,
+    end_time: formData.get("end_time") as string || null,
+    location: formData.get("location") as string || null,
+    agenda: formData.get("agenda") as string,
+    discussion_notes: formData.get("discussion_notes") as string || null,
+    decisions: formData.get("decisions") as string || null,
+    status: "scheduled",
+    created_by: user.id,
+  });
+
+  if (error) return { error: error.message };
+  revalidatePath("/dashboard/department/reviews");
+}
+
+export async function createReflection(formData: FormData) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+
+  const { data: profile } = await supabase.from("users").select("department_id").eq("id", user.id).single();
+  if (!profile?.department_id) return { error: "No department assigned" };
+
+  const { error } = await supabase.from("monthly_reflections").insert({
+    department_id: profile.department_id,
+    period_name: formData.get("period_name") as string,
+    reflection_date: formData.get("reflection_date") as string,
+    what_worked_well: formData.get("what_worked_well") as string || null,
+    key_challenges: formData.get("key_challenges") as string || null,
+    adaptive_actions_taken: formData.get("adaptive_actions_taken") as string || null,
+    lessons_learned: formData.get("lessons_learned") as string || null,
+    status: "draft",
+    created_by: user.id,
+  });
+
+  if (error) return { error: error.message };
+  revalidatePath("/dashboard/department/reviews");
+}
+
 export async function uploadEvidence(formData: FormData) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();

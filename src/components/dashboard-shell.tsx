@@ -7,6 +7,7 @@ import {
   LayoutDashboard, ClipboardList, FileText, Upload,
   BarChart2, Settings, LogOut, Menu, X, BookOpen, Bell, Target,
   ClipboardCheck, ShieldAlert, Users, Briefcase, CalendarClock,
+  MessageSquareText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,7 @@ const navByRole: Record<UserRole, { href: string; label: string; icon: React.Ele
     { href: "/dashboard/department/work-plans", label: "Work Plans", icon: ClipboardList },
     { href: "/dashboard/department/reports", label: "Report", icon: FileText },
     { href: "/dashboard/department/evidence", label: "Evidence", icon: Upload },
+    { href: "/dashboard/department/reviews", label: "Reviews", icon: MessageSquareText },
     { href: "/dashboard/department/beneficiaries", label: "Beneficiaries", icon: Users },
     { href: "/dashboard/department/resources", label: "Resources", icon: Briefcase },
     { href: "/dashboard/department/knowledge", label: "Knowledge", icon: BookOpen },

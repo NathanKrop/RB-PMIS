@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Download, Eye } from "lucide-react";
+import { classifyEvidenceMedia, getEvidenceTypeLabel } from "@/lib/evidence-utils";
 import type { Evidence } from "@/lib/types";
 
 export interface EvidenceGalleryItem extends Evidence {
@@ -38,7 +39,7 @@ export function EvidenceGallery({ items }: { items: EvidenceGalleryItem[] }) {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <CardTitle className="text-sm font-medium leading-snug">{item.title}</CardTitle>
-                <p className="text-xs text-muted-foreground">{item.file_type} · {formatBytes(item.file_size)}</p>
+                <p className="text-xs text-muted-foreground">{getEvidenceTypeLabel(classifyEvidenceMedia(item.file_type), item.file_type)} · {formatBytes(item.file_size)}</p>
               </div>
               <Badge className="capitalize text-xs" variant={item.verification_status === "verified" ? "success" : item.verification_status === "pending" ? "warning" : item.verification_status === "rejected" ? "destructive" : "outline"}>
                 {item.verification_status.replace(/_/g, " ")}

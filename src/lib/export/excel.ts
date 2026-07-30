@@ -1,7 +1,7 @@
 import ExcelJS from "exceljs";
 import type { ReportExportData } from "./fetch-report";
 
-export async function generateExcelReport(data: ReportExportData): Promise<Buffer> {
+export async function generateExcelReport(data: ReportExportData, audience: string = "management"): Promise<Buffer> {
   const { report, activities, indicators } = data;
   const wb = new ExcelJS.Workbook();
   wb.creator = "RB-PMIS";
@@ -11,13 +11,14 @@ export async function generateExcelReport(data: ReportExportData): Promise<Buffe
   const summary = wb.addWorksheet("Summary");
   summary.columns = [{ width: 30 }, { width: 60 }];
 
-  const titleRow = summary.addRow(["RB-PMIS Performance Report"]);
+  const titleRow = summary.addRow([audience === "management" ? "RB-PMIS Management Summary" : "RB-PMIS Donor Summary"]);
   titleRow.font = { bold: true, size: 14 };
   summary.mergeCells("A1:B1");
   titleRow.alignment = { horizontal: "center" };
 
   summary.addRow([]);
   summary.addRow(["Department", report.departments?.name ?? "—"]);
+  summary.addRow(["Audience", audience === "management" ? "Management" : "Donor"]);
   summary.addRow(["Period", report.reporting_period_name]);
   summary.addRow(["Period Type", report.reporting_period]);
   summary.addRow(["Status", report.status.toUpperCase()]);

@@ -61,20 +61,21 @@ export default async function ManagementReportsPage() {
           </span>
         </div>
         <div className="grid gap-3 sm:grid-cols-3 mt-6">
-        <div className="rounded-lg border border-amber-300 bg-amber-50 p-4">
-          <p className="text-xs font-medium uppercase tracking-wide text-amber-700">Reviewed</p>
-          <p className="mt-2 text-lg font-semibold text-amber-900">{reviewedReports.length}</p>
-          <p className="text-sm text-amber-700">Ready for verification</p>
-        </div>
-        <div className="rounded-lg border border-blue-300 bg-blue-50 p-4">
-          <p className="text-xs font-medium uppercase tracking-wide text-blue-700">Verified</p>
-          <p className="mt-2 text-lg font-semibold text-blue-900">{verifiedReports.length}</p>
-          <p className="text-sm text-blue-700">Ready for final approval</p>
-        </div>
-        <div className="rounded-lg border border-emerald-300 bg-emerald-50 p-4">
-          <p className="text-xs font-medium uppercase tracking-wide text-emerald-700">Approved</p>
-          <p className="mt-2 text-lg font-semibold text-emerald-900">{approvedReports.length}</p>
-          <p className="text-sm text-emerald-700">Finalized report</p>
+          <div className="rounded-lg border border-amber-300 bg-amber-50 p-4">
+            <p className="text-xs font-medium uppercase tracking-wide text-amber-700">Reviewed</p>
+            <p className="mt-2 text-lg font-semibold text-amber-900">{reviewedReports.length}</p>
+            <p className="text-sm text-amber-700">Ready for verification</p>
+          </div>
+          <div className="rounded-lg border border-blue-300 bg-blue-50 p-4">
+            <p className="text-xs font-medium uppercase tracking-wide text-blue-700">Verified</p>
+            <p className="mt-2 text-lg font-semibold text-blue-900">{verifiedReports.length}</p>
+            <p className="text-sm text-blue-700">Ready for final approval</p>
+          </div>
+          <div className="rounded-lg border border-emerald-300 bg-emerald-50 p-4">
+            <p className="text-xs font-medium uppercase tracking-wide text-emerald-700">Approved</p>
+            <p className="mt-2 text-lg font-semibold text-emerald-900">{approvedReports.length}</p>
+            <p className="text-sm text-emerald-700">Finalized report</p>
+          </div>
         </div>
       </div>
 

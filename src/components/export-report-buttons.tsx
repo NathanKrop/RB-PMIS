@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { FileText, Sheet, FileDown, Loader2 } from "lucide-react";
+import { FileText, Sheet, FileDown, Loader2, Presentation } from "lucide-react";
 import type { ReportExportData } from "@/lib/export/fetch-report";
 import type { HookData } from "jspdf-autotable";
 
@@ -22,13 +22,14 @@ export function ExportReportButtons({ reportId, periodName }: ExportReportButton
   async function downloadFile(format: "word" | "excel") {
     setLoadingFormat(format);
     try {
-      const res = await fetch(`/api/export/${format}?id=${reportId}`);
+      const audience = format === "word" ? "donor" : "management";
+      const res = await fetch(`/api/export/${format}?id=${reportId}&audience=${audience}`);
       if (!res.ok) throw new Error("Export failed");
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `report-${periodName.replace(/\s+/g, "-")}.${format === "word" ? "docx" : "xlsx"}`;
+      a.download = `${audience}-${periodName.replace(/\s+/g, "-")}.${format === "word" ? "docx" : "xlsx"}`;
       a.click();
       URL.revokeObjectURL(url);
     } finally {
@@ -127,7 +128,7 @@ export function ExportReportButtons({ reportId, periodName }: ExportReportButton
         className="h-7 px-2 text-xs gap-1"
         disabled={!!loadingFormat}
         onClick={() => downloadFile("word")}
-        title="Export Word"
+        title="Export donor-facing Word brief"
       >
         {loadingFormat === "word" ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileText className="h-3 w-3" />}
         Word
@@ -137,7 +138,7 @@ export function ExportReportButtons({ reportId, periodName }: ExportReportButton
         className="h-7 px-2 text-xs gap-1"
         disabled={!!loadingFormat}
         onClick={() => downloadFile("excel")}
-        title="Export Excel"
+        title="Export management Excel summary"
       >
         {loadingFormat === "excel" ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sheet className="h-3 w-3" />}
         Excel
@@ -147,10 +148,10 @@ export function ExportReportButtons({ reportId, periodName }: ExportReportButton
         className="h-7 px-2 text-xs gap-1"
         disabled={!!loadingFormat}
         onClick={downloadPDF}
-        title="Export PDF"
+        title="Export PDF briefing"
       >
-        {loadingFormat === "pdf" ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileDown className="h-3 w-3" />}
-        PDF
+        {loadingFormat === "pdf" ? <Loader2 className="h-3 w-3 animate-spin" /> : <Presentation className="h-3 w-3" />}
+        Brief
       </Button>
     </div>
   );

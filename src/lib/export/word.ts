@@ -19,7 +19,7 @@ function cell(text: string, bold = false) {
   });
 }
 
-export async function generateWordReport(data: ReportExportData): Promise<Buffer> {
+export async function generateWordReport(data: ReportExportData, audience: string = "donor"): Promise<Buffer> {
   const { report, activities, indicators } = data;
   const deptName = report.departments?.name ?? "Unknown Department";
   const generatedAt = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
@@ -73,16 +73,22 @@ export async function generateWordReport(data: ReportExportData): Promise<Buffer
     ],
   });
 
+  const title = audience === "management" ? "RB-PMIS Management Brief" : "RB-PMIS Donor Report";
+  const subtitle = audience === "management"
+    ? "Management-focused summary of achievements, risks, and follow-up actions"
+    : "Donor-facing summary of results, progress, and evidence of impact";
+
   const doc = new Document({
     sections: [{
       children: [
         new Paragraph({
-          text: "RB-PMIS Performance Report",
+          text: title,
           heading: HeadingLevel.TITLE,
           alignment: AlignmentType.CENTER,
           spacing: { after: 200 },
         }),
         new Paragraph({ text: deptName, alignment: AlignmentType.CENTER, spacing: { after: 100 } }),
+        new Paragraph({ text: subtitle, alignment: AlignmentType.CENTER, spacing: { after: 100 } }),
         new Paragraph({ text: `Period: ${report.reporting_period_name}`, alignment: AlignmentType.CENTER }),
         new Paragraph({ text: `Status: ${report.status.toUpperCase()}`, alignment: AlignmentType.CENTER }),
         new Paragraph({ text: `Generated: ${generatedAt}`, alignment: AlignmentType.CENTER, spacing: { after: 400 } }),
