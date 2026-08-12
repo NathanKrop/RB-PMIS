@@ -28,8 +28,8 @@ ALTER TABLE public.budget_requests ENABLE ROW LEVEL SECURITY;
 -- Finance: full access
 CREATE POLICY "finance_budget_requests_all" ON public.budget_requests
   FOR ALL TO authenticated
-  USING (public.get_user_role(auth.uid()) = 'finance')
-  WITH CHECK (public.get_user_role(auth.uid()) = 'finance');
+  USING (public.get_user_role(auth.uid())::text = 'finance')
+  WITH CHECK (public.get_user_role(auth.uid())::text = 'finance');
 
 -- Management: read + review (update)
 CREATE POLICY "management_budget_requests_read" ON public.budget_requests

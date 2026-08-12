@@ -63,13 +63,13 @@ ALTER TABLE expenditures ENABLE ROW LEVEL SECURITY;
 -- Finance officers: full access
 CREATE POLICY "finance_budget_lines_all" ON budget_lines
   FOR ALL TO authenticated
-  USING (public.get_user_role(auth.uid()) = 'finance')
-  WITH CHECK (public.get_user_role(auth.uid()) = 'finance');
+  USING (public.get_user_role(auth.uid())::text = 'finance')
+  WITH CHECK (public.get_user_role(auth.uid())::text = 'finance');
 
 CREATE POLICY "finance_expenditures_all" ON expenditures
   FOR ALL TO authenticated
-  USING (public.get_user_role(auth.uid()) = 'finance')
-  WITH CHECK (public.get_user_role(auth.uid()) = 'finance');
+  USING (public.get_user_role(auth.uid())::text = 'finance')
+  WITH CHECK (public.get_user_role(auth.uid())::text = 'finance');
 
 -- Management: read-only
 CREATE POLICY "management_budget_lines_read" ON budget_lines
