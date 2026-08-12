@@ -661,3 +661,164 @@ export async function createReportingDeadline(formData: FormData) {
   if (error) return { error: error.message };
   revalidatePath("/dashboard/officer/deadlines");
 }
+
+// ── Finance ───────────────────────────────────────────────────────────────────
+
+export async function createBudgetLine(formData: FormData) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+  const { data: profile } = await supabase.from("users").select("role").eq("id", user.id).single();
+  if (profile?.role !== "finance") return { error: "Only finance officers can create budget lines" };
+  const amountApproved = Number(formData.get("amount_approved") || 0);
+  if (!Number.isFinite(amountApproved) || amountApproved < 0) return { error: "Invalid amount" };
+  const { error } = await supabase.from("budget_lines").insert({
+    department_id: String(formData.get("department_id")),
+    activity_id: String(formData.get("activity_id") || "") || null,
+    title: String(formData.get("title")).trim(),
+    category: String(formData.get("category")),
+    fiscal_year: String(formData.get("fiscal_year")).trim(),
+    amount_approved: amountApproved,
+    amount_revised: formData.get("amount_revised") ? Number(formData.get("amount_revised")) : null,
+    status: "draft",
+    notes: String(formData.get("notes") || "") || null,
+    created_by: user.id,
+  });
+  if (error) return { error: error.message };
+  revalidatePath("/dashboard/finance/budget");
+  revalidatePath("/dashboard/management/resources");
+}
+
+export async function updateBudgetLineStatus(id: string, status: "draft" | "approved" | "closed") {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+  const { error } = await supabase.from("budget_lines").update({ status }).eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath("/dashboard/finance/budget");
+}
+
+export async function createExpenditure(formData: FormData) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+  const { data: profile } = await supabase.from("users").select("role, department_id").eq("id", user.id).single();
+  if (profile?.role !== "finance") return { error: "Only finance officers can record expenditures" };
+  const amount = Number(formData.get("amount") || 0);
+  if (!Number.isFinite(amount) || amount <= 0) return { error: "Amount must be a positive number" };
+  const budgetLineId = String(formData.get("budget_line_id"));
+  const { data: bl } = await supabase.from("budget_lines").select("department_id, status").eq("id", budgetLineId).single();
+  if (!bl) return { error: "Budget line not found" };
+  if (bl.status === "closed") return { error: "Cannot record expenditure against a closed budget line" };
+  const { error } = await supabase.from("expenditures").insert({
+    budget_line_id: budgetLineId,
+    department_id: bl.department_id,
+    description: String(formData.get("description")).trim(),
+    amount,
+    expenditure_date: String(formData.get("expenditure_date")),
+    payment_reference: String(formData.get("payment_reference") || "") || null,
+    status: "pending",
+    notes: String(formData.get("notes") || "") || null,
+    created_by: user.id,
+  });
+  if (error) return { error: error.message };
+  revalidatePath("/dashboard/finance/expenditures");
+}
+
+export async function updateExpenditureStatus(id: string, status: "approved" | "rejected") {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+  const { data: profile } = await supabase.from("users").select("role").eq("id", user.id).single();
+  if (!["finance", "management"].includes(profile?.role ?? "")) return { error: "Unauthorized" };
+  const { error } = await supabase.from("expenditures").update({ status, reviewed_by: user.id }).eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath("/dashboard/finance/expenditures");
+}
+
+// ── Budget Requests ───────────────────────────────────────────────────────────
+
+export async function createBudgetRequest(formData: FormData) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+  const { data: profile } = await supabase.from("users").select("role, department_id").eq("id", user.id).single();
+  if (profile?.role !== "finance") return { error: "Only finance officers can submit budget requests" };
+
+  const amount = Number(formData.get("amount_requested") || 0);
+  if (!Number.isFinite(amount) || amount <= 0) return { error: "Amount must be a positive number" };
+
+  const requestType = String(formData.get("request_type"));
+  const budgetLineId = String(formData.get("budget_line_id") || "");
+  if (requestType === "revision" && !budgetLineId) return { error: "A budget line must be selected for revision requests" };
+
+  const { error } = await supabase.from("budget_requests").insert({
+    department_id: String(formData.get("department_id") || profile.department_id),
+    budget_line_id: budgetLineId || null,
+    request_type: requestType,
+    title: String(formData.get("title")).trim(),
+    category: String(formData.get("category") || "other"),
+    fiscal_year: String(formData.get("fiscal_year")).trim(),
+    amount_requested: amount,
+    justification: String(formData.get("justification")).trim(),
+    created_by: user.id,
+  });
+  if (error) return { error: error.message };
+
+  // Notify management
+  const { data: managers } = await supabase.from("users").select("id").eq("role", "management");
+  for (const m of managers ?? []) {
+    await createNotification(m.id, "Budget Request Submitted",
+      `A new ${requestType} request "${String(formData.get("title")).trim()}" has been submitted for review.`, "info");
+  }
+
+  revalidatePath("/dashboard/finance");
+  revalidatePath("/dashboard/finance/budget");
+}
+
+export async function reviewBudgetRequest(id: string, status: "approved" | "rejected", reviewNotes?: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+  const { data: profile } = await supabase.from("users").select("role").eq("id", user.id).single();
+  if (!["management", "finance"].includes(profile?.role ?? "")) return { error: "Unauthorized" };
+
+  const { data: req } = await supabase.from("budget_requests").select("title, request_type, department_id, budget_line_id, amount_requested, category, fiscal_year").eq("id", id).single();
+  if (!req) return { error: "Request not found" };
+
+  const { error } = await supabase.from("budget_requests").update({
+    status,
+    reviewed_by: user.id,
+    review_notes: reviewNotes?.trim() || null,
+    reviewed_at: new Date().toISOString(),
+  }).eq("id", id);
+  if (error) return { error: error.message };
+
+  // If approved submission → auto-create a draft budget line
+  if (status === "approved" && req.request_type === "submission") {
+    await supabase.from("budget_lines").insert({
+      department_id: req.department_id,
+      title: req.title,
+      category: req.category,
+      fiscal_year: req.fiscal_year,
+      amount_approved: req.amount_requested,
+      status: "draft",
+      created_by: user.id,
+    });
+  }
+
+  // If approved revision → update the linked budget line's revised amount
+  if (status === "approved" && req.request_type === "revision" && req.budget_line_id) {
+    await supabase.from("budget_lines").update({ amount_revised: req.amount_requested }).eq("id", req.budget_line_id);
+  }
+
+  // Notify finance officers
+  const { data: financeUsers } = await supabase.from("users").select("id").eq("role", "finance");
+  for (const f of financeUsers ?? []) {
+    await createNotification(f.id, `Budget Request ${status === "approved" ? "Approved" : "Rejected"}`,
+      `Your request "${req.title}" has been ${status}.`, status === "approved" ? "info" : "escalation");
+  }
+
+  revalidatePath("/dashboard/finance");
+  revalidatePath("/dashboard/finance/budget");
+}

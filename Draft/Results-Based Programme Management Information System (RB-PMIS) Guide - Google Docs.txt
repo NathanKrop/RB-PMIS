@@ -1,0 +1,486 @@
+​SYSTEM​​LOG GUIDE​
+​Development of an Integrated Results-Based Programme Management Information System​
+​(RB-PMIS)​
+​1. Background and Rationale​
+​Effective programme implementation requires more than tracking completed activities; it​
+​requires understanding whether interventions are contributing to meaningful changes and​
+​achieving intended results. Organizations increasingly require systems that support​
+​results-based management by linking strategic objectives, outcomes, outputs, activities,​
+​indicators, evidence and performance reporting.​
+​Currently, departmental reporting is conducted through Excel-based templates that capture​
+​weekly activities completed, key metrics, challenges, actions taken, lessons learned and planned​
+​activities. While this approach provides a basic reporting structure, it is largely activity-focused​
+​and requires significant manual effort to consolidate information across departments.​
+​The current process presents several limitations:​
+​●​ ​Limited linkage between departmental work plans and reported achievements​
+​●​ ​Focus on activities completed rather than measurable results achieved​
+​●​ ​Manual consolidation of multiple departmental reports​
+​●​ ​Limited ability to track progress against strategic objectives and indicators​
+​●​ ​Difficulty analysing trends, recurring challenges, and programme performance over time​
+​●​ ​Limited availability of real-time information for management decision-making​
+​To address these challenges, there is a need to develop an Integrated Results-Based Programme​
+​Management Information System (RB-PMIS). The system will provide a centralized platform that​
+​connects strategic planning, departmental work plans, implementation tracking, outcome​
+​monitoring, reporting and organizational learning.​
+​The RB-PMIS will enable departments to report not only on what they have done, but also on​
+​the results achieved, evidence generated, challenges affecting performance and adaptations​
+​required to improve programme effectiveness.​
+
+​2. Purpose of the System​
+​The purpose of developing the RB-PMIS is to establish an integrated digital platform that​
+​strengthens results-based planning, monitoring, reporting and decision-making across the​
+​organization.​
+​The system will ensure that departmental activities are directly linked to organizational​
+​outcomes and strategic priorities, enabling management to track progress, measure​
+​performance and make informed decisions based on reliable programme data.​
+​3. Objectives​
+​The objectives of the RB-PMIS are to:​
+​1.​ ​Establish a centralized digital platform for results-based planning, monitoring and​
+​reporting​
+​2.​ ​Link departmental work plans with organizational outcomes, outputs, indicators and​
+​targets​
+​3.​ ​Shift reporting from activity-based updates to outcome-focused performance reporting​
+​4.​ ​Improve the quality, consistency and timeliness of programme information​
+​5.​ ​Enable real-time tracking of progress against planned results and performance indicators​
+​6.​ ​Reduce manual consolidation and preparation of programme reports​
+​7.​ ​Strengthen accountability, transparency and evidence-based decision-making​
+​8.​ ​Promote organizational learning through systematic documentation of lessons,​
+​challenges and adaptive actions.​
+​4. Proposed System Framework​
+​The RB-PMIS will follow a results chain approach:​
+​Strategic Objectives → Outcomes → Outputs → Activities → Indicators → Evidence → Results​
+​Reporting​
+​Example:​
+​Strategic Objective:​
+​Improve access to quality services.​
+​↓​
+
+​Outcome:​
+​Communities have improved access to essential services.​
+​↓​
+​Outcome Indicators:​
+​●​ ​Percentage increase in service utilization.​
+​●​ ​Number of beneficiaries accessing services.​
+​●​ ​Beneficiary satisfaction levels.​
+​↓​
+​Outputs:​
+​●​ ​Community awareness sessions conducted.​
+​●​ ​Service providers strengthened.​
+​↓​
+​Activities:​
+​●​ ​Conduct community engagement sessions.​
+​●​ ​Train service providers.​
+​●​ ​Develop communication materials.​
+​5. Key System Components​
+​5.1 Strategic Results Framework Module​
+​This module will store and manage the organization's results framework, including:​
+​●​ ​Strategic objectives​
+​●​ ​Outcomes​
+​●​ ​Outputs​
+​●​ ​Indicators​
+​●​ ​Baselines​
+​●​ ​Targets​
+​●​ ​Reporting frequencies​
+​●​ ​Responsible departments​
+
+​This ensures that all departmental activities contribute to clearly defined organizational results.​
+​5.2 Departmental Work Planning Module​
+​The Departmental Work Planning Module will provide a centralized platform where​
+​departments develop, manage, track and update their annual, quarterly and monthly work​
+​plans. The module will ensure that departmental plans are aligned with organizational​
+​objectives and provide a foundation for monitoring implementation progress and reporting​
+​results.​
+​The system will move work planning from a static document-based process into a dynamic​
+​planning and performance management tool where planned activities, expected results,​
+​progress updates, risks and evidence can be tracked throughout the implementation period.​
+​The module will capture the following information:​
+​Planning Framework​
+​●​ ​Strategic objective or departmental objective​
+​●​ ​Quarter and reporting period which will be sequenced as weekly, Monthly and quarterly.​
+​●​ ​Specific activity and activity description​
+​●​ ​Expected outputs​
+​●​ ​Intended outcomes​
+​●​ ​Performance indicators​
+​●​ ​Targets​
+​●​ ​Responsible person​
+​●​ ​Implementation timelines​
+​●​ ​Required resources​
+​Activity Implementation Tracking​
+​For each planned activity, the system will allow departments to track:​
+​●​ ​Monthly implementation schedule​
+​●​ ​Activity status​
+​●​ ​Progress updates​
+​●​ ​Actual achievements against planned targets​
+​●​ ​Variances between planned and actual implementation​
+
+​Results and Indicator Tracking​
+​The system will capture measurable indicators of success linked to each planned activity.​
+​Indicators will be defined clearly to support results-based monitoring and may include​
+​quantitative or qualitative measures.​
+​Examples:​
+​●​ ​Number of participants reached​
+​●​ ​Number of sessions conducted​
+​●​ ​Percentage completion of planned activities​
+​●​ ​Number of services delivered​
+​●​ ​Level of stakeholder engagement achieved​
+​Evidence and Means of Verification​
+​Each activity will include clearly defined evidence requirements to support verification of​
+​reported achievements.​
+​The system will allow departments to specify and upload relevant means of verification,​
+​including:​
+​●​ ​Attendance registers​
+​●​ ​Signed participant lists​
+​●​ ​Activity reports​
+​●​ ​Monitoring checklists​
+​●​ ​Survey results​
+​●​ ​Assessment reports​
+​●​ ​Photographs​
+​●​ ​Videos​
+​●​ ​Other approved supporting documentation​
+​The system will encourage departments to specify the exact evidence required rather than using​
+​general descriptions.​
+​Resource Planning​
+​The module will capture all inputs required for successful implementation, including:​
+​●​ ​Human resources​
+​●​ ​Financial resources​
+
+​●​ ​Materials and supplies​
+​●​ ​Equipment​
+​●​ ​Other operational requirements​
+​Risk and Mitigation Tracking​
+​The system will capture anticipated risks and implementation challenges associated with​
+​planned activities, together with corresponding mitigation measures.​
+​This will enable proactive monitoring of factors that may affect achievement of planned results.​
+​Work Plan Monitoring and Reporting Linkage​
+​The work planning module will be directly linked to the reporting module, allowing departments​
+​to provide progress updates against approved plans rather than preparing separate activity​
+​reports.​
+​The linkage will enable the organization to track:​
+​●​ ​Planned activities versus completed activities​
+​●​ ​Expected results versus actual achievements​
+​●​ ​Indicator progress against targets​
+​●​ ​Implementation challenges and responses​
+​●​ ​Evidence supporting reported achievements​
+​This integrated approach will ensure that work planning, implementation monitoring, evidence​
+​management and results reporting are connected within a single system.​
+​5.3 Results Monitoring and Performance Tracking Module​
+​This module will enable departments to track progress against indicators.​
+​The system will capture:​
+​●​ ​Indicator values​
+​●​ ​Baseline information​
+​●​ ​Targets​
+​●​ ​Current achievement​
+​●​ ​Percentage progress​
+​●​ ​Supporting evidence​
+
+​5.4 Outcome-Based Reporting Module​
+​Weekly and periodic reporting will move from activity reporting to results reporting.​
+​Departments will provide updates on:​
+​Outcome Progress:​​What changes or results have been​​achieved during the reporting period?​
+​Key Results Achieved:​​What measurable improvements​​or outputs were delivered?​
+​Evidence:​​What documents or data demonstrate achievement?​
+​Examples:​
+​●​ ​Attendance records​
+​●​ ​Survey results​
+​●​ ​Assessment reports​
+​●​ ​Monitoring reports​
+​●​ ​Photos or verification documents​
+​Challenges Affecting Results​
+​What factors affected progress toward outcomes?​
+​Adaptive Actions​
+​What actions were taken to address challenges and improve performance?​
+​Lessons Learned​
+​What approaches worked, what did not work, and what should be adjusted?​
+​Priorities for the Next Reporting Period​
+​What results will be prioritized next?​
+​5.5 Dashboard and Analytics Module​
+​The system will provide role-based dashboards designed to provide users with information​
+​relevant to their responsibilities while maintaining appropriate data governance and reporting​
+​controls.​
+
+​The dashboard structure will follow a reporting hierarchy where departmental submissions are​
+​reviewed and consolidated by the Programme Reporting Officer before summarized information​
+​is presented to management.​
+​Management Dashboard( Program Manager/ Executive Director)​
+​The management dashboard will provide a high-level overview of organizational performance​
+​and will focus on strategic decision-making information, including:​
+​●​ ​Progress against strategic outcomes​
+​●​ ​Achievement of key indicators and targets​
+​●​ ​Overall programme performance​
+​●​ ​Progress against departmental commitments​
+​●​ ​Delayed activities requiring attention​
+​●​ ​Emerging risks and implementation barriers​
+​●​ ​Common challenges affecting programme delivery​
+​●​ ​Key results and achievements​
+​●​ ​Areas requiring management decisions or support​
+​Management users will access validated and consolidated information prepared through the​
+​programme reporting process rather than unreviewed departmental submissions. This will​
+​ensure that management decisions are based on accurate, analysed and quality-assured​
+​information.​
+​Programme Reporting Officer Dashboard​
+​The Programme Reporting Officer dashboard will provide more detailed oversight and reporting​
+​management functionality, including:​
+​●​ ​Departmental submission status​
+​●​ ​Pending and overdue reports​
+​●​ ​Results achieved by department​
+​●​ ​Indicator performance tracking​
+​●​ ​Progress against planned activities and outcomes​
+​●​ ​Reporting trends over time​
+​●​ ​Evidence submission status​
+​●​ ​Areas requiring follow-up or clarification​
+​●​ ​Data quality issues requiring attention​
+​●​ ​Recurring challenges and lessons emerging across departments​
+
+​Departmental Dashboard​
+​Departmental users will have access to their own reporting and performance information,​
+​including:​
+​●​ ​Department work plan progress​
+​●​ ​Planned versus completed activities​
+​●​ ​Outcome contributions​
+​●​ ​Indicator achievement​
+​●​ ​Pending reporting requirements​
+​●​ ​Uploaded evidence status​
+​●​ ​Previous submissions and lessons learned​
+​This role-based dashboard approach will ensure that departments are accountable for​
+​reporting, the Programme Reporting Officer maintains quality assurance and consolidation​
+​responsibilities, and management receives concise, strategic information to support​
+​decision-making.​
+​5.6 Automated Reporting Module​
+​The system will generate:​
+​●​ ​Weekly programme updates​
+​●​ ​Monthly performance reports​
+​●​ ​Quarterly results reports​
+​●​ ​Annual reports​
+​●​ ​Donor reporting summaries​
+​●​ ​Management briefs​
+​Reports will be exportable into:​
+​●​ ​Word.​
+​●​ ​PDF.​
+​●​ ​Excel.​
+​5.7 Workflow and Notification Module​
+​The system will support:​
+​●​ ​Reporting deadlines​
+​●​ ​Automated reminders​
+
+​●​ ​Approval processes​
+​●​ ​Follow-up notifications​
+​●​ ​Escalation of overdue submissions​
+​5.8 Knowledge Management and Learning Repository​
+​The system will store:​
+​●​ ​Previous reports​
+​●​ ​Lessons learned​
+​●​ ​Good practices​
+​●​ ​Supporting evidence​
+​●​ ​Programme documents​
+​This will strengthen institutional learning and knowledge sharing.​
+​5.9 Evidence, Document Management and Verification Module​
+​A core component of the Integrated Results-Based Programme Management Information​
+​System (RB-PMIS) will be an Evidence, Document Management and Verification Module. This​
+​module will ensure that reported results, outputs, and indicators are supported by appropriate​
+​and verifiable evidence.​
+​The module will provide a centralized repository where departments can upload, organize, link,​
+​review, and retrieve programme documentation associated with planned activities, achieved​
+​results, and performance indicators. This will strengthen accountability, improve data quality,​
+​support audit requirements, and enhance confidence in reported programme achievements.​
+​Types of Evidence Supported​
+​The system will allow departments to upload and manage different forms of programme​
+​evidence, including:​
+​●​ ​Activity completion reports​
+​●​ ​Attendance sheets and participant registers​
+​●​ ​Training reports​
+​●​ ​Workshop and meeting documentation​
+​●​ ​Signed participant lists​
+​●​ ​Monitoring and supervision reports​
+​●​ ​Assessment and evaluation reports​
+
+​●​ ​Surveys and feedback forms​
+​●​ ​Photos and videos from field activities​
+​●​ ​Case studies and success stories​
+​●​ ​Beneficiary testimonials​
+​●​ ​Communication materials​
+​●​ ​Presentations​
+​●​ ​Signed agreements and approval documents​
+​●​ ​Any other relevant supporting documentation required for verification​
+​●​ ​Concept Notes​
+​Evidence Linking and Classification​
+​All uploaded evidence will be linked directly to the relevant programme components to ensure​
+​traceability and accountability. Each document will be associated with:​
+​●​ ​Strategic objective​
+​●​ ​Outcome​
+​●​ ​Output​
+​●​ ​Activity​
+​●​ ​Indicator​
+​●​ ​Target​
+​●​ ​Reporting period​
+​●​ ​Responsible department​
+​●​ ​Responsible officer​
+​Example:​
+​Outcome:​​Improved access to community services​
+​Indicator:​​Number of beneficiaries reached​
+​Reported Achievement:​​500 beneficiaries reached during​​the reporting period​
+​Supporting Evidence:​
+​●​ ​Participant attendance registers​
+​●​ ​Activity reports​
+​●​ ​Field photographs​
+​●​ ​Beneficiary feedback forms​
+​●​ ​Monitoring checklists​
+
+​Evidence Capture​
+​For programmes involving field implementation, the system will support field evidence capture​
+​through:​
+​●​ ​Photo uploads​
+​●​ ​Video uploads​
+​●​ ​Mobile-based evidence submission​
+​●​ ​Activity-linked photographs​
+​●​ ​Descriptions accompanying uploaded evidence​
+​This will improve verification of field activities and strengthen the credibility of reported​
+​achievements.​
+​Example:​
+​A field officer uploads a photograph from a community engagement activity. The system​
+​records:​
+​●​ ​Activity: Community Convening​
+​●​ ​Location: Site A​
+​●​ ​Date: 15 July 2026​
+​●​ ​Uploaded by: Responsible Officer​
+​●​ ​Linked Output: Community members reached​
+​●​ ​Linked Indicator: Number of participants reached​
+​Document Management Features​
+​The module will provide:​
+​Secure Storage​
+​●​ ​Centralized storage of programme documents​
+​●​ ​Controlled access based on user roles​
+​●​ ​Protection against unauthorized changes​
+​Organization and Search​
+​Users will be able to search documents by:​
+​●​ ​Department​
+​●​ ​Programme area​
+
+​●​ ​Outcome​
+​●​ ​Indicator​
+​●​ ​Reporting period​
+​●​ ​Document type​
+​●​ ​Keywords​
+​Version Control​
+​The system will maintain:​
+​●​ ​Previous versions of documents​
+​●​ ​Date of updates​
+​●​ ​Person responsible for changes​
+​Evidence Completeness Tracking​
+​The system will identify:​
+​●​ ​Reports submitted without supporting evidence​
+​●​ ​Indicators requiring verification​
+​●​ ​Missing documentation​
+​●​ ​Pending approvals​
+​Evidence Review and Verification Workflow​
+​The system will support an internal quality assurance process:​
+​Step 1: Department Submission​
+​Department leads submit:​
+​●​ ​Results update​
+​●​ ​Indicator progress​
+​●​ ​Supporting evidence​
+​Step 2: Review​
+​The Programme Reporting Officer reviews:​
+​●​ ​Completeness of information​
+​●​ ​Accuracy of reported achievements​
+​●​ ​Availability of supporting evidence​
+
+​Step 3: Verification​
+​Evidence is checked against reported results and assigned a verification status:​
+​●​ ​Verified​
+​●​ ​Requires clarification​
+​●​ ​Pending additional evidence​
+​●​ ​Rejected​
+​Step 4: Approval and Reporting​
+​Verified information is incorporated into:​
+​●​ ​Weekly programme reports​
+​●​ ​Monthly performance reports​
+​●​ ​Quarterly results reports​
+​●​ ​Donor reporting documents​
+​Benefits of the Evidence Management Module​
+​The module will:​
+​●​ ​Improve credibility and reliability of programme reports​
+​●​ ​Strengthen results-based management​
+​●​ ​Reduce time spent searching for supporting documents​
+​●​ ​Improve audit preparedness​
+​●​ ​Support donor compliance requirements​
+​●​ ​Preserve institutional knowledge​
+​●​ ​Create a historical repository of programme evidence​
+​●​ ​Enable learning from previous interventions​
+​●​ ​Improve transparency and accountability​
+​Future Enhancements​
+​The module can be expanded to include:​
+​●​ ​Mobile data collection applications​
+​●​ ​Digital attendance registration​
+​●​ ​Beneficiary database integration​
+​●​ ​Geographic mapping of activities​
+​●​ ​Data quality checks​
+
+​●​ ​Artificial intelligence-assisted evidence review​
+​6. Expected Benefits​
+​Improved Results Management​
+​●​ ​Clear connection between activities and organizational outcomes.​
+​●​ ​Improved visibility of programme performance.​
+​●​ ​Better understanding of what interventions are achieving.​
+​Improved Reporting Efficiency​
+​●​ ​Reduced manual consolidation.​
+​●​ ​Standardized reporting processes.​
+​●​ ​Faster preparation of management and donor reports.​
+​Stronger Accountability​
+​●​ ​Clear responsibility for planned results.​
+​●​ ​Better tracking of commitments.​
+​●​ ​Improved follow-up of delayed activities.​
+​Better Decision-Making​
+​●​ ​Timely access to performance information.​
+​●​ ​Evidence-based management decisions.​
+​●​ ​Early identification of risks and implementation challenges.​
+​Enhanced Organizational Learning​
+​●​ ​Systematic capture of lessons learned.​
+​●​ ​Identification of successful approaches.​
+​●​ ​Continuous improvement of programme delivery.​
+​7. Implementation Approach​
+​Phase 1: Assessment and System Design​
+​Activities:​
+
+​●​ ​Review existing reporting tools and work plans.​
+​●​ ​Define organizational results framework.​
+​●​ ​Map reporting requirements.​
+​●​ ​Define user roles and workflows.​
+​Phase 2: Development and Configuration​
+​Activities:​
+​●​ ​Develop system architecture.​
+​●​ ​Configure results framework.​
+​●​ ​Create reporting forms.​
+​●​ ​Develop dashboards.​
+​●​ ​Configure notifications and workflows.​
+​Phase 3: Pilot Testing​
+​Activities:​
+​●​ ​Pilot with selected departments.​
+​●​ ​Collect user feedback.​
+​●​ ​Refine system functionality.​
+​●​ ​Develop user guidelines.​
+​Phase 4: Organization-Wide Rollout​
+​Activities:​
+​●​ ​Train users.​
+​●​ ​Upload departmental work plans.​
+​●​ ​Launch the system.​
+​8. Future Expansion Possibilities​
+​The RB-PMIS can be expanded to include:​
+​●​ ​Monitoring and Evaluation systems​
+​●​ ​Indicator tracking​
+​●​ ​Risk management​
+​●​ ​Procurement tracking​
+
+​●​ ​Beneficiary databases​
+​●​ ​Mobile data collection​
+​●​ ​Donor reporting portals​
+​●​ ​Artificial intelligence-assisted reporting and analysis​
+​9. Conclusion​
+​The development of an Integrated Results-Based Programme Management Information System​
+​will transform the organization's current reporting approach from an activity-focused process​
+​into a strategic performance management system.​
+​By linking work plans, implementation activities, outcomes, indicators, evidence, and reporting,​
+​the system will enable the organization to measure not only what was done, but also the results​
+​achieved and the changes created.​
+​The RB-PMIS will strengthen accountability, improve reporting efficiency, enhance​
+​organizational learning, and provide management with timely and reliable information to guide​
+​strategic decisions and improve programme impact.​

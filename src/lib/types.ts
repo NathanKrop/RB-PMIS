@@ -1,4 +1,4 @@
-export type UserRole = "department_user" | "reporting_officer" | "management";
+export type UserRole = "department_user" | "reporting_officer" | "management" | "finance";
 export type WorkPlanStatus = "draft" | "submitted" | "approved" | "rejected";
 export type ActivityStatus = "planned" | "in_progress" | "completed" | "delayed" | "cancelled";
 export type ReportStatus = "draft" | "submitted" | "reviewed" | "verified" | "approved" | "rejected";
@@ -255,6 +255,62 @@ export interface ReportDraft {
   adaptive_actions: string;
   lessons_learned: string;
   next_period_priorities: string;
+}
+
+export type BudgetLineStatus = "draft" | "approved" | "closed";
+export type ExpenditureStatus = "pending" | "approved" | "rejected";
+export type BudgetRequestType = "submission" | "revision";
+export type BudgetRequestStatus = "pending" | "approved" | "rejected";
+
+export interface BudgetRequest {
+  id: string;
+  department_id: string;
+  budget_line_id: string | null;
+  request_type: BudgetRequestType;
+  title: string;
+  category: string;
+  fiscal_year: string;
+  amount_requested: number;
+  justification: string;
+  status: BudgetRequestStatus;
+  reviewed_by: string | null;
+  review_notes: string | null;
+  reviewed_at: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BudgetLine {
+  id: string;
+  department_id: string;
+  activity_id: string | null;
+  title: string;
+  category: "personnel" | "operations" | "capital" | "transfers" | "other";
+  fiscal_year: string;
+  amount_approved: number;
+  amount_revised: number | null;
+  status: BudgetLineStatus;
+  notes: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Expenditure {
+  id: string;
+  budget_line_id: string;
+  department_id: string;
+  description: string;
+  amount: number;
+  expenditure_date: string;
+  payment_reference: string | null;
+  status: ExpenditureStatus;
+  reviewed_by: string | null;
+  notes: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ReportingDeadline {

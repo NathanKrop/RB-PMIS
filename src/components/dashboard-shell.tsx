@@ -7,7 +7,7 @@ import {
   LayoutDashboard, ClipboardList, FileText, Upload,
   BarChart2, Settings, LogOut, Menu, X, BookOpen, Bell, Target,
   ClipboardCheck, ShieldAlert, Users, Briefcase, CalendarClock,
-  MessageSquareText,
+  MessageSquareText, DollarSign, Receipt, FilePlus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -70,19 +70,28 @@ const navByRole: Record<UserRole, { href: string; label: string; icon: React.Ele
     { href: "/dashboard/management/knowledge", label: "Knowledge", icon: BookOpen },
     { href: "/dashboard/management/notifications", label: "Notifications", icon: Bell },
   ],
+  finance: [
+    { href: "/dashboard/finance", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/dashboard/finance/budget", label: "Budget Lines", icon: DollarSign },
+    { href: "/dashboard/finance/requests", label: "Budget Requests", icon: FilePlus },
+    { href: "/dashboard/finance/expenditures", label: "Expenditures", icon: Receipt },
+    { href: "/dashboard/finance/reports", label: "Reports", icon: FileText },
+    { href: "/dashboard/finance/notifications", label: "Notifications", icon: Bell },
+  ],
 };
 
 const roleLabel: Record<UserRole, string> = {
   department_user: "Trainer",
   reporting_officer: "Reporting Officer",
   management: "Management",
+  finance: "Finance Officer",
 };
 
 export function DashboardShell({ profile, notifications = [], children }: { profile: Profile; notifications?: Notification[]; children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
   const role = profile?.role ?? "department_user";
-  const roleSlug = { department_user: "department", reporting_officer: "officer", management: "management" }[role];
+  const roleSlug = { department_user: "department", reporting_officer: "officer", management: "management", finance: "finance" }[role];
   const base = `/dashboard/${roleSlug}`;
   const nav = navByRole[role].map((item) => item);
 
@@ -165,6 +174,12 @@ export function DashboardShell({ profile, notifications = [], children }: { prof
           </Button>
           <span className="flex-1" />
           <NotificationBell notifications={notifications} />
+          <form action={logout}>
+            <Button variant="ghost" size="sm" className="hidden md:inline-flex" type="submit">
+              <LogOut className="h-4 w-4" />
+              <span className="ml-2">Sign out</span>
+            </Button>
+          </form>
         </header>
         <main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</main>
       </div>
