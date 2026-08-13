@@ -29,6 +29,7 @@ export async function login(formData: FormData) {
   const role = profile?.role as UserRole;
   if (role === "reporting_officer") redirect("/dashboard/officer");
   if (role === "management") redirect("/dashboard/management");
+  if (role === "finance") redirect("/dashboard/finance");
   redirect("/dashboard/department");
 }
 

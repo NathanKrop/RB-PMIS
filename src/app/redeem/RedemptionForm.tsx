@@ -27,7 +27,7 @@ export default function RedemptionForm() {
       const json = await res.json()
       if (!res.ok) throw new Error(json?.error || 'Failed')
       // Redirect to login or dashboard
-      router.push('/auth/signin')
+      router.push('/auth/login')
     } catch (err: any) {
       setError(err?.message ?? String(err))
     } finally {
