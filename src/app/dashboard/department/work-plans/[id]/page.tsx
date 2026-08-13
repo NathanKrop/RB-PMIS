@@ -1,11 +1,10 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 import { WorkPlanActions } from "../work-plan-actions";
 import { ActivityForm } from "../activity-form";
-import type { WorkPlan, Activity } from "@/lib/types";
+import type { Activity } from "@/lib/types";
 
 const statusVariant: Record<string, "default" | "secondary" | "success" | "warning" | "destructive" | "outline"> = {
   draft: "secondary",

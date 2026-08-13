@@ -264,6 +264,13 @@ export async function uploadEvidence(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Unauthorized" };
 
+  const { data: profile } = await supabase
+    .from("users")
+    .select("department_id")
+    .eq("id", user.id)
+    .single();
+  if (!profile?.department_id) return { error: "No department assigned" };
+
   const file = formData.get("file") as File;
   if (!file) return { error: "No file provided" };
 
@@ -279,6 +286,7 @@ export async function uploadEvidence(formData: FormData) {
     file_size: file.size,
     file_type: file.type,
     uploaded_by: user.id,
+    department_id: profile.department_id,
     verification_status: "pending",
     caption: formData.get("caption") as string || null,
     location: formData.get("location") as string || null,
@@ -306,6 +314,7 @@ export async function uploadEvidence(formData: FormData) {
     }
   }
   revalidatePath("/dashboard/department/evidence");
+  revalidatePath("/dashboard/department");
 }
 
 export async function updateEvidenceStatus(id: string, status: string, comments?: string) {

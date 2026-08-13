@@ -9,6 +9,15 @@ import { DataFreshnessCard } from "@/components/data-freshness-card";
 import type { Deadline } from "@/components/deadline-overview";
 import type { ReportingDeadline } from "@/lib/types";
 
+type DashboardStats = {
+  evidence_count: number;
+  completed_activity_count: number;
+  work_plan_count: number;
+  completed_activity_evidence_count: number;
+  unresolved_data_quality_check_count: number;
+  latest_updated_at: string | null;
+};
+
 const ACTIVITY_COLORS: Record<string, string> = {
   planned: "#94a3b8",
   in_progress: "#f59e0b",
@@ -41,32 +50,19 @@ export default async function DepartmentDashboard() {
   const [
     { data: activities },
     { data: reports },
-    { count: evidenceCount },
-    { count: completedCount },
-    { count: workPlanCount },
     { data: indicators },
     { data: deadlines },
     { data: allReports },
-    { data: latestActivity },
-    { data: latestReport },
-    { data: latestEvidence },
-    { data: latestWorkPlan },
-    { count: unresolvedDataQualityChecks },
+    { data: statsData },
   ] = await Promise.all([
     supabase.from("activities").select("id, status").eq("department_id", deptId),
     supabase.from("reports").select("status").eq("department_id", deptId),
-    supabase.from("evidence").select("*", { count: "exact", head: true }).eq("department_id", deptId),
-    supabase.from("activities").select("*", { count: "exact", head: true }).eq("department_id", deptId).eq("status", "completed"),
-    supabase.from("work_plans").select("*", { count: "exact", head: true }).eq("department_id", deptId),
     supabase.from("indicators").select("title, target, current_value, activity_id, activities!inner(department_id)").eq("activities.department_id", deptId),
     supabase.from("reporting_deadlines").select("*, departments(name)").eq("department_id", deptId).order("due_date"),
     supabase.from("reports").select("department_id, reporting_period_name").eq("department_id", deptId).neq("status", "draft"),
-    supabase.from("activities").select("updated_at").eq("department_id", deptId).order("updated_at", { ascending: false }).limit(1).single(),
-    supabase.from("reports").select("updated_at").eq("department_id", deptId).order("updated_at", { ascending: false }).limit(1).single(),
-    supabase.from("evidence").select("updated_at").eq("department_id", deptId).order("updated_at", { ascending: false }).limit(1).single(),
-    supabase.from("work_plans").select("updated_at").eq("department_id", deptId).order("updated_at", { ascending: false }).limit(1).single(),
-    supabase.from("data_quality_checks").select("*", { count: "exact", head: true }).eq("department_id", deptId).eq("resolved", false),
+    supabase.rpc("get_department_dashboard_stats", { p_department_id: deptId }),
   ]);
+  const dashboardStats = statsData as DashboardStats | null;
 
   const reportPeriods = new Set(
     (allReports ?? []).map((r) => `${r.department_id}::${r.reporting_period_name.toLowerCase().trim()}`)
@@ -80,16 +76,12 @@ export default async function DepartmentDashboard() {
   const pendingDeadlines = enrichedDeadlines.filter((d) => !d.has_submission);
 
   const completedActivityIds = (activities ?? []).filter((a) => a.status === "completed").map((a) => a.id);
-  const completedActivityEvidenceCount = completedActivityIds.length > 0
-    ? await supabase.from("evidence").select("*", { count: "exact", head: true }).in("activity_id", completedActivityIds).then((res) => res.count ?? 0)
-    : 0;
+  const completedActivityEvidenceCount = dashboardStats?.completed_activity_evidence_count ?? 0;
   const evidenceCompletenessRate = completedActivityIds.length > 0
     ? Math.round((completedActivityEvidenceCount / completedActivityIds.length) * 100)
     : 0;
-  const openQualityChecks = unresolvedDataQualityChecks ?? 0;
-
-  const freshnessTimestamps = [latestActivity?.updated_at, latestReport?.updated_at, latestEvidence?.updated_at, latestWorkPlan?.updated_at].filter(Boolean) as string[];
-  const latestUpdatedAt = freshnessTimestamps.length > 0 ? freshnessTimestamps.sort().reverse()[0] : null;
+  const openQualityChecks = dashboardStats?.unresolved_data_quality_check_count ?? 0;
+  const latestUpdatedAt = dashboardStats?.latest_updated_at ?? null;
 
   const activityStatusCounts = (activities ?? []).reduce<Record<string, number>>((acc, a) => {
     acc[a.status] = (acc[a.status] ?? 0) + 1;
@@ -125,14 +117,14 @@ export default async function DepartmentDashboard() {
   // Activity completion rate
   const totalActivities = (activities ?? []).length;
   const completionRate = totalActivities > 0
-    ? Math.round(((completedCount ?? 0) / totalActivities) * 100)
+    ? Math.round(((dashboardStats?.completed_activity_count ?? 0) / totalActivities) * 100)
     : 0;
 
   const stats = [
-    { label: "Work Plans", value: workPlanCount ?? 0, icon: ClipboardList },
+    { label: "Work Plans", value: dashboardStats?.work_plan_count ?? 0, icon: ClipboardList },
     { label: "Reports", value: (reports ?? []).length, icon: FileText },
-    { label: "Evidence Files", value: evidenceCount ?? 0, icon: Upload },
-    { label: "Completed Activities", value: completedCount ?? 0, icon: CheckCircle2 },
+    { label: "Evidence Files", value: dashboardStats?.evidence_count ?? 0, icon: Upload },
+    { label: "Completed Activities", value: dashboardStats?.completed_activity_count ?? 0, icon: CheckCircle2 },
   ];
 
   return (
@@ -193,7 +185,7 @@ export default async function DepartmentDashboard() {
       )}
 
       {/* Evidence completeness */}
-      <EvidenceCompletenessOverview items={[{reportName:"Current Period",reportPeriod:reports?.[0]?.status||"draft",departmentName:profile?.departments?.name||"",evidenceCount:evidenceCount??0,hasEvidence:(evidenceCount??0)>0}]} compact />
+      <EvidenceCompletenessOverview items={[{reportName:"Current Period",reportPeriod:reports?.[0]?.status||"draft",departmentName:profile?.departments?.name||"",evidenceCount:dashboardStats?.evidence_count ?? 0,hasEvidence:(dashboardStats?.evidence_count ?? 0)>0}]} compact />
 
       {/* Activity completion rate */}
       <Card>
@@ -213,7 +205,7 @@ export default async function DepartmentDashboard() {
             </div>
             <span className="text-sm font-semibold w-12 text-right">{completionRate}%</span>
           </div>
-          <p className="text-xs text-muted-foreground mt-1">{completedCount ?? 0} of {totalActivities} activities completed</p>
+          <p className="text-xs text-muted-foreground mt-1">{dashboardStats?.completed_activity_count ?? 0} of {totalActivities} activities completed</p>
         </CardContent>
       </Card>
 

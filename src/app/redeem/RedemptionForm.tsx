@@ -2,6 +2,10 @@
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
+function errorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error)
+}
+
 export default function RedemptionForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -24,12 +28,15 @@ export default function RedemptionForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, password }),
       })
-      const json = await res.json()
-      if (!res.ok) throw new Error(json?.error || 'Failed')
+      const json: unknown = await res.json()
+      const message = typeof json === "object" && json !== null && "error" in json && typeof json.error === "string"
+        ? json.error
+        : "Failed"
+      if (!res.ok) throw new Error(message)
       // Redirect to login or dashboard
       router.push('/auth/login')
-    } catch (err: any) {
-      setError(err?.message ?? String(err))
+    } catch (err: unknown) {
+      setError(errorMessage(err))
     } finally {
       setLoading(false)
     }

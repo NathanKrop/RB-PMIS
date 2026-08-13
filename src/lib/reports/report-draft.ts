@@ -51,9 +51,6 @@ export async function buildReportDraft(workPlanId: string): Promise<ReportDraft 
     .slice(0, 3)
     .map((item) => `• ${item.description}`);
 
-  const resourceIssues = allActivities.filter((item) => item.required_resources && item.status !== "completed");
-  const riskIssues = allActivities.filter((item) => item.anticipated_risks || item.mitigation_measures);
-
   const outcomeProgress = `This work plan has ${allActivities.length} activities: ${completedCount} completed, ${inProgressCount} in progress, ${plannedCount} planned, ${delayedCount} delayed, and ${cancelledCount} cancelled. ${topOutputLines.length > 0 ? `Key focus areas include ${topOutputLines.join(", ")}.` : ""}`;
 
   const keyResults = keyResultLines.length > 0

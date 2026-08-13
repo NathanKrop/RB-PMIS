@@ -16,7 +16,7 @@ export function TravelRequestActions({
   const [showNotes, setShowNotes] = useState(false);
   const [notes, setNotes] = useState("");
 
-  async function run(fn: () => Promise<any>) {
+  async function run(fn: () => Promise<unknown>) {
     setLoading(true);
     await fn();
     setLoading(false);

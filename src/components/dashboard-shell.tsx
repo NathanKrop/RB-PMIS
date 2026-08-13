@@ -92,8 +92,6 @@ export function DashboardShell({ profile, notifications = [], children }: { prof
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
   const role = profile?.role ?? "department_user";
-  const roleSlug = { department_user: "department", reporting_officer: "officer", management: "management", finance: "finance" }[role];
-  const base = `/dashboard/${roleSlug}`;
   const nav = navByRole[role].map((item) => item);
 
   if (!profile) {

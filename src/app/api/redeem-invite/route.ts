@@ -10,9 +10,13 @@ if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json()
-    const { token, password } = body || {}
-    if (!token || !password) return NextResponse.json({ error: 'Missing token or password' }, { status: 400 })
+    const body: unknown = await req.json()
+    const { token, password } = typeof body === "object" && body !== null
+      ? body as { token?: unknown; password?: unknown }
+      : {};
+    if (typeof token !== "string" || typeof password !== "string" || !token || !password) {
+      return NextResponse.json({ error: 'Missing token or password' }, { status: 400 })
+    }
 
     const supabase = createClient(SUPABASE_URL as string, SERVICE_ROLE_KEY as string)
 
@@ -35,7 +39,8 @@ export async function POST(req: Request) {
     await supabase.from('invites').update({ redeemed: true, redeemed_at: new Date().toISOString() }).eq('id', invite.id)
 
     return NextResponse.json({ ok: true, user: created }, { status: 200 })
-  } catch (err: any) {
-    return NextResponse.json({ error: err?.message ?? String(err) }, { status: 500 })
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

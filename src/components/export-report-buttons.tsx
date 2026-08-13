@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { FileText, Sheet, FileDown, Loader2, Presentation } from "lucide-react";
+import { FileText, Sheet, Loader2, Presentation } from "lucide-react";
 import type { ReportExportData } from "@/lib/export/fetch-report";
 import type { HookData } from "jspdf-autotable";
 
