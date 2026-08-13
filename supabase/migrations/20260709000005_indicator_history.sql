@@ -11,9 +11,11 @@ CREATE INDEX indicator_value_history_indicator_recorded_at_idx
 
 ALTER TABLE public.indicator_value_history ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Indicator history select" ON public.indicator_value_history;
 CREATE POLICY "Indicator history select" ON public.indicator_value_history
   FOR SELECT TO authenticated USING (true);
 
+DROP POLICY IF EXISTS "Indicator history write" ON public.indicator_value_history;
 CREATE POLICY "Indicator history write" ON public.indicator_value_history
   FOR INSERT TO authenticated
   WITH CHECK (public.get_user_role(auth.uid()) = 'reporting_officer' AND recorded_by = auth.uid());

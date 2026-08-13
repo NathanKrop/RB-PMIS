@@ -42,8 +42,10 @@ CREATE TABLE IF NOT EXISTS public.reporting_deadlines (
 );
 
 ALTER TABLE public.reporting_deadlines ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Reporting deadlines select" ON public.reporting_deadlines;
 CREATE POLICY "Reporting deadlines select" ON public.reporting_deadlines FOR SELECT TO authenticated
   USING (public.get_user_role(auth.uid()) IN ('reporting_officer', 'management') OR department_id = public.get_user_department(auth.uid()));
+DROP POLICY IF EXISTS "Reporting deadlines write" ON public.reporting_deadlines;
 CREATE POLICY "Reporting deadlines write" ON public.reporting_deadlines FOR ALL TO authenticated
   USING (public.get_user_role(auth.uid()) = 'reporting_officer')
   WITH CHECK (public.get_user_role(auth.uid()) = 'reporting_officer');

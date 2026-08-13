@@ -29,6 +29,7 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS on_report_status_change ON public.reports;
 CREATE TRIGGER on_report_status_change
   AFTER UPDATE OF status ON public.reports
   FOR EACH ROW
@@ -55,6 +56,7 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS on_evidence_status_change ON public.evidence;
 CREATE TRIGGER on_evidence_status_change
   AFTER UPDATE OF verification_status ON public.evidence
   FOR EACH ROW
@@ -90,6 +92,7 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS on_work_plan_status_change ON public.work_plans;
 CREATE TRIGGER on_work_plan_status_change
   AFTER UPDATE OF status ON public.work_plans
   FOR EACH ROW

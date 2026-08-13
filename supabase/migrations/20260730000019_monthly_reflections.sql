@@ -35,6 +35,7 @@ CREATE TABLE public.monthly_reflections (
 CREATE INDEX monthly_reflections_dept_period_idx ON public.monthly_reflections (department_id, period_name DESC);
 
 -- Triggers
+DROP TRIGGER IF EXISTS update_monthly_reflections_modtime ON public.monthly_reflections;
 CREATE TRIGGER update_monthly_reflections_modtime
   BEFORE UPDATE ON public.monthly_reflections
   FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();
@@ -42,12 +43,14 @@ CREATE TRIGGER update_monthly_reflections_modtime
 -- RLS
 ALTER TABLE public.monthly_reflections ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Monthly reflections select" ON public.monthly_reflections;
 CREATE POLICY "Monthly reflections select" ON public.monthly_reflections FOR SELECT TO authenticated
   USING (
     public.get_user_role(auth.uid()) IN ('reporting_officer', 'management') OR
     department_id = public.get_user_department(auth.uid())
   );
 
+DROP POLICY IF EXISTS "Monthly reflections write" ON public.monthly_reflections;
 CREATE POLICY "Monthly reflections write" ON public.monthly_reflections FOR ALL TO authenticated
   USING (public.get_user_role(auth.uid()) = 'reporting_officer')
   WITH CHECK (public.get_user_role(auth.uid()) = 'reporting_officer');
@@ -85,6 +88,7 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS auto_create_knowledge_from_reflection ON public.monthly_reflections;
 DROP TRIGGER IF EXISTS auto_create_knowledge_from_reflection ON public.monthly_reflections;
 CREATE TRIGGER auto_create_knowledge_from_reflection
   AFTER UPDATE OF status ON public.monthly_reflections

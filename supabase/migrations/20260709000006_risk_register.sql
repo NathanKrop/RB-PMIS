@@ -16,7 +16,10 @@ CREATE TABLE public.risks (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+DROP TRIGGER IF EXISTS update_risks_modtime ON public.risks;
 CREATE TRIGGER update_risks_modtime BEFORE UPDATE ON public.risks FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();
 ALTER TABLE public.risks ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Risks select" ON public.risks;
 CREATE POLICY "Risks select" ON public.risks FOR SELECT TO authenticated USING (public.get_user_role(auth.uid()) IN ('reporting_officer', 'management') OR department_id = public.get_user_department(auth.uid()));
+DROP POLICY IF EXISTS "Risks write" ON public.risks;
 CREATE POLICY "Risks write" ON public.risks FOR ALL TO authenticated USING (public.get_user_role(auth.uid()) = 'reporting_officer') WITH CHECK (public.get_user_role(auth.uid()) = 'reporting_officer');

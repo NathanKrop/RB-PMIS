@@ -44,6 +44,7 @@ END;
 $$;
 
 DROP TRIGGER IF EXISTS check_work_plan_status_transition ON public.work_plans;
+DROP TRIGGER IF EXISTS check_work_plan_status_transition ON public.work_plans;
 CREATE TRIGGER check_work_plan_status_transition
   BEFORE UPDATE OF status ON public.work_plans
   FOR EACH ROW
@@ -91,6 +92,7 @@ END;
 $$;
 
 DROP TRIGGER IF EXISTS check_report_status_transition ON public.reports;
+DROP TRIGGER IF EXISTS check_report_status_transition ON public.reports;
 CREATE TRIGGER check_report_status_transition
   BEFORE UPDATE OF status ON public.reports
   FOR EACH ROW
@@ -128,6 +130,7 @@ END;
 $$;
 
 DROP TRIGGER IF EXISTS check_evidence_status_transition ON public.evidence;
+DROP TRIGGER IF EXISTS check_evidence_status_transition ON public.evidence;
 CREATE TRIGGER check_evidence_status_transition
   BEFORE UPDATE OF verification_status ON public.evidence
   FOR EACH ROW
@@ -160,6 +163,7 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS check_activity_status_transition ON public.activities;
 DROP TRIGGER IF EXISTS check_activity_status_transition ON public.activities;
 CREATE TRIGGER check_activity_status_transition
   BEFORE UPDATE OF status ON public.activities
@@ -197,12 +201,14 @@ END;
 $$;
 
 DROP TRIGGER IF EXISTS require_work_plan_rejection_reason ON public.work_plans;
+DROP TRIGGER IF EXISTS require_work_plan_rejection_reason ON public.work_plans;
 CREATE TRIGGER require_work_plan_rejection_reason
   BEFORE UPDATE OF status ON public.work_plans
   FOR EACH ROW
   WHEN (NEW.status = 'rejected' AND OLD.status IS DISTINCT FROM NEW.status)
   EXECUTE FUNCTION public.require_rejection_reason();
 
+DROP TRIGGER IF EXISTS require_report_rejection_reason ON public.reports;
 DROP TRIGGER IF EXISTS require_report_rejection_reason ON public.reports;
 CREATE TRIGGER require_report_rejection_reason
   BEFORE UPDATE OF status ON public.reports

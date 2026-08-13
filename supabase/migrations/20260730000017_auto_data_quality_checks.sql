@@ -41,6 +41,7 @@ END;
 $$;
 
 DROP TRIGGER IF EXISTS auto_check_activity_evidence ON public.activities;
+DROP TRIGGER IF EXISTS auto_check_activity_evidence ON public.activities;
 CREATE TRIGGER auto_check_activity_evidence
   AFTER UPDATE OF status ON public.activities
   FOR EACH ROW
@@ -97,6 +98,7 @@ END;
 $$;
 
 DROP TRIGGER IF EXISTS auto_check_report_completeness ON public.reports;
+DROP TRIGGER IF EXISTS auto_check_report_completeness ON public.reports;
 CREATE TRIGGER auto_check_report_completeness
   AFTER UPDATE OF status ON public.reports
   FOR EACH ROW
@@ -135,6 +137,7 @@ END;
 $$;
 
 DROP TRIGGER IF EXISTS auto_check_duplicate_work_plan ON public.work_plans;
+DROP TRIGGER IF EXISTS auto_check_duplicate_work_plan ON public.work_plans;
 CREATE TRIGGER auto_check_duplicate_work_plan
   AFTER INSERT OR UPDATE OF period_type, period_name ON public.work_plans
   FOR EACH ROW
@@ -155,6 +158,7 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS update_dq_resolved_at ON public.data_quality_checks;
 DROP TRIGGER IF EXISTS update_dq_resolved_at ON public.data_quality_checks;
 CREATE TRIGGER update_dq_resolved_at
   BEFORE UPDATE OF resolved ON public.data_quality_checks

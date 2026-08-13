@@ -18,6 +18,7 @@ CREATE TABLE public.knowledge_items (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+DROP TRIGGER IF EXISTS update_knowledge_items_modtime ON public.knowledge_items;
 CREATE TRIGGER update_knowledge_items_modtime
   BEFORE UPDATE ON public.knowledge_items
   FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();

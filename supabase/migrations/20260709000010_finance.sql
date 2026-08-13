@@ -49,10 +49,12 @@ CREATE TABLE IF NOT EXISTS expenditures (
 
 -- Triggers for updated_at (idempotent)
 DROP TRIGGER IF EXISTS set_budget_lines_updated_at ON public.budget_lines;
+DROP TRIGGER IF EXISTS set_budget_lines_updated_at ON public.budget_lines;
 CREATE TRIGGER set_budget_lines_updated_at
   BEFORE UPDATE ON public.budget_lines
   FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();
 
+DROP TRIGGER IF EXISTS set_expenditures_updated_at ON public.expenditures;
 DROP TRIGGER IF EXISTS set_expenditures_updated_at ON public.expenditures;
 CREATE TRIGGER set_expenditures_updated_at
   BEFORE UPDATE ON public.expenditures
@@ -63,11 +65,13 @@ ALTER TABLE budget_lines ENABLE ROW LEVEL SECURITY;
 ALTER TABLE expenditures ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "finance_budget_lines_all" ON public.budget_lines;
+DROP POLICY IF EXISTS "finance_budget_lines_all" ON public.budget_lines;
 CREATE POLICY "finance_budget_lines_all" ON public.budget_lines
   FOR ALL TO authenticated
   USING (public.get_user_role(auth.uid())::text = 'finance')
   WITH CHECK (public.get_user_role(auth.uid())::text = 'finance');
 
+DROP POLICY IF EXISTS "finance_expenditures_all" ON public.expenditures;
 DROP POLICY IF EXISTS "finance_expenditures_all" ON public.expenditures;
 CREATE POLICY "finance_expenditures_all" ON public.expenditures
   FOR ALL TO authenticated
@@ -76,10 +80,12 @@ CREATE POLICY "finance_expenditures_all" ON public.expenditures
 
 -- Management: read-only
 DROP POLICY IF EXISTS "management_budget_lines_read" ON public.budget_lines;
+DROP POLICY IF EXISTS "management_budget_lines_read" ON public.budget_lines;
 CREATE POLICY "management_budget_lines_read" ON public.budget_lines
   FOR SELECT TO authenticated
   USING (public.get_user_role(auth.uid()) = 'management');
 
+DROP POLICY IF EXISTS "management_expenditures_read" ON public.expenditures;
 DROP POLICY IF EXISTS "management_expenditures_read" ON public.expenditures;
 CREATE POLICY "management_expenditures_read" ON public.expenditures
   FOR SELECT TO authenticated
@@ -87,10 +93,12 @@ CREATE POLICY "management_expenditures_read" ON public.expenditures
 
 -- Reporting officer: read-only
 DROP POLICY IF EXISTS "officer_budget_lines_read" ON public.budget_lines;
+DROP POLICY IF EXISTS "officer_budget_lines_read" ON public.budget_lines;
 CREATE POLICY "officer_budget_lines_read" ON public.budget_lines
   FOR SELECT TO authenticated
   USING (public.get_user_role(auth.uid()) = 'reporting_officer');
 
+DROP POLICY IF EXISTS "officer_expenditures_read" ON public.expenditures;
 DROP POLICY IF EXISTS "officer_expenditures_read" ON public.expenditures;
 CREATE POLICY "officer_expenditures_read" ON public.expenditures
   FOR SELECT TO authenticated

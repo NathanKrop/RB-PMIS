@@ -231,6 +231,7 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
@@ -247,16 +248,27 @@ END;
 $$;
 
 -- Register update triggers
+DROP TRIGGER IF EXISTS update_departments_modtime ON public.departments;
 CREATE TRIGGER update_departments_modtime BEFORE UPDATE ON public.departments FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();
+DROP TRIGGER IF EXISTS update_users_modtime ON public.users;
 CREATE TRIGGER update_users_modtime BEFORE UPDATE ON public.users FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();
+DROP TRIGGER IF EXISTS update_strategic_objectives_modtime ON public.strategic_objectives;
 CREATE TRIGGER update_strategic_objectives_modtime BEFORE UPDATE ON public.strategic_objectives FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();
+DROP TRIGGER IF EXISTS update_outcomes_modtime ON public.outcomes;
 CREATE TRIGGER update_outcomes_modtime BEFORE UPDATE ON public.outcomes FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();
+DROP TRIGGER IF EXISTS update_outcome_indicators_modtime ON public.outcome_indicators;
 CREATE TRIGGER update_outcome_indicators_modtime BEFORE UPDATE ON public.outcome_indicators FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();
+DROP TRIGGER IF EXISTS update_outputs_modtime ON public.outputs;
 CREATE TRIGGER update_outputs_modtime BEFORE UPDATE ON public.outputs FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();
+DROP TRIGGER IF EXISTS update_work_plans_modtime ON public.work_plans;
 CREATE TRIGGER update_work_plans_modtime BEFORE UPDATE ON public.work_plans FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();
+DROP TRIGGER IF EXISTS update_activities_modtime ON public.activities;
 CREATE TRIGGER update_activities_modtime BEFORE UPDATE ON public.activities FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();
+DROP TRIGGER IF EXISTS update_indicators_modtime ON public.indicators;
 CREATE TRIGGER update_indicators_modtime BEFORE UPDATE ON public.indicators FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();
+DROP TRIGGER IF EXISTS update_evidence_modtime ON public.evidence;
 CREATE TRIGGER update_evidence_modtime BEFORE UPDATE ON public.evidence FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();
+DROP TRIGGER IF EXISTS update_reports_modtime ON public.reports;
 CREATE TRIGGER update_reports_modtime BEFORE UPDATE ON public.reports FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();
 
 --------------------------------------------------------------------------------
@@ -309,22 +321,31 @@ CREATE POLICY "Profiles can be updated by owner or reporting officers"
 
 -- 3. STRATEGIC RESULTS FRAMEWORK (Objectives, Outcomes, Indicators, Outputs)
 -- Select rules: viewable by all authenticated users
+DROP POLICY IF EXISTS "Strategic objectives select" ON public.strategic_objectives;
 CREATE POLICY "Strategic objectives select" ON public.strategic_objectives FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "Outcomes select" ON public.outcomes;
 CREATE POLICY "Outcomes select" ON public.outcomes FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "Outcome indicators select" ON public.outcome_indicators;
 CREATE POLICY "Outcome indicators select" ON public.outcome_indicators FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "Outputs select" ON public.outputs;
 CREATE POLICY "Outputs select" ON public.outputs FOR SELECT TO authenticated USING (true);
 
 -- Edit rules: writeable by reporting officers only
+DROP POLICY IF EXISTS "Strategic objectives write" ON public.strategic_objectives;
 CREATE POLICY "Strategic objectives write" ON public.strategic_objectives FOR ALL TO authenticated
   USING (public.get_user_role(auth.uid()) = 'reporting_officer') WITH CHECK (public.get_user_role(auth.uid()) = 'reporting_officer');
+DROP POLICY IF EXISTS "Outcomes write" ON public.outcomes;
 CREATE POLICY "Outcomes write" ON public.outcomes FOR ALL TO authenticated
   USING (public.get_user_role(auth.uid()) = 'reporting_officer') WITH CHECK (public.get_user_role(auth.uid()) = 'reporting_officer');
+DROP POLICY IF EXISTS "Outcome indicators write" ON public.outcome_indicators;
 CREATE POLICY "Outcome indicators write" ON public.outcome_indicators FOR ALL TO authenticated
   USING (public.get_user_role(auth.uid()) = 'reporting_officer') WITH CHECK (public.get_user_role(auth.uid()) = 'reporting_officer');
+DROP POLICY IF EXISTS "Outputs write" ON public.outputs;
 CREATE POLICY "Outputs write" ON public.outputs FOR ALL TO authenticated
   USING (public.get_user_role(auth.uid()) = 'reporting_officer') WITH CHECK (public.get_user_role(auth.uid()) = 'reporting_officer');
 
 -- 4. WORK PLANS
+DROP POLICY IF EXISTS "Work plans select policy" ON public.work_plans;
 CREATE POLICY "Work plans select policy" ON public.work_plans FOR SELECT TO authenticated
   USING (
     public.get_user_role(auth.uid()) = 'reporting_officer' OR
@@ -332,6 +353,7 @@ CREATE POLICY "Work plans select policy" ON public.work_plans FOR SELECT TO auth
     (public.get_user_role(auth.uid()) = 'management' AND status = 'approved')
   );
 
+DROP POLICY IF EXISTS "Work plans write policy" ON public.work_plans;
 CREATE POLICY "Work plans write policy" ON public.work_plans FOR ALL TO authenticated
   USING (
     public.get_user_role(auth.uid()) = 'reporting_officer' OR
@@ -343,6 +365,7 @@ CREATE POLICY "Work plans write policy" ON public.work_plans FOR ALL TO authenti
   );
 
 -- 5. ACTIVITIES
+DROP POLICY IF EXISTS "Activities select policy" ON public.activities;
 CREATE POLICY "Activities select policy" ON public.activities FOR SELECT TO authenticated
   USING (
     public.get_user_role(auth.uid()) = 'reporting_officer' OR
@@ -352,6 +375,7 @@ CREATE POLICY "Activities select policy" ON public.activities FOR SELECT TO auth
     ))
   );
 
+DROP POLICY IF EXISTS "Activities write policy" ON public.activities;
 CREATE POLICY "Activities write policy" ON public.activities FOR ALL TO authenticated
   USING (
     public.get_user_role(auth.uid()) = 'reporting_officer' OR
@@ -363,6 +387,7 @@ CREATE POLICY "Activities write policy" ON public.activities FOR ALL TO authenti
   );
 
 -- 6. INDICATORS (linked to activities)
+DROP POLICY IF EXISTS "Indicators select policy" ON public.indicators;
 CREATE POLICY "Indicators select policy" ON public.indicators FOR SELECT TO authenticated
   USING (
     public.get_user_role(auth.uid()) = 'reporting_officer' OR
@@ -376,6 +401,7 @@ CREATE POLICY "Indicators select policy" ON public.indicators FOR SELECT TO auth
     ))
   );
 
+DROP POLICY IF EXISTS "Indicators write policy" ON public.indicators;
 CREATE POLICY "Indicators write policy" ON public.indicators FOR ALL TO authenticated
   USING (
     public.get_user_role(auth.uid()) = 'reporting_officer' OR
@@ -391,6 +417,7 @@ CREATE POLICY "Indicators write policy" ON public.indicators FOR ALL TO authenti
   );
 
 -- 7. EVIDENCE & JOIN TABLES
+DROP POLICY IF EXISTS "Evidence select policy" ON public.evidence;
 CREATE POLICY "Evidence select policy" ON public.evidence FOR SELECT TO authenticated
   USING (
     public.get_user_role(auth.uid()) = 'reporting_officer' OR
@@ -400,9 +427,11 @@ CREATE POLICY "Evidence select policy" ON public.evidence FOR SELECT TO authenti
     (public.get_user_role(auth.uid()) = 'management' AND verification_status = 'verified')
   );
 
+DROP POLICY IF EXISTS "Evidence insert policy" ON public.evidence;
 CREATE POLICY "Evidence insert policy" ON public.evidence FOR INSERT TO authenticated
   WITH CHECK (auth.uid() = uploaded_by);
 
+DROP POLICY IF EXISTS "Evidence update/delete policy" ON public.evidence;
 CREATE POLICY "Evidence update/delete policy" ON public.evidence FOR ALL TO authenticated
   USING (
     public.get_user_role(auth.uid()) = 'reporting_officer' OR
@@ -414,22 +443,35 @@ CREATE POLICY "Evidence update/delete policy" ON public.evidence FOR ALL TO auth
   );
 
 -- Evidence Links select rules
+DROP POLICY IF EXISTS "Evidence strategic objective link select" ON public.evidence_strategic_objectives;
 CREATE POLICY "Evidence strategic objective link select" ON public.evidence_strategic_objectives FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "Evidence outcome link select" ON public.evidence_outcomes;
 CREATE POLICY "Evidence outcome link select" ON public.evidence_outcomes FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "Evidence output link select" ON public.evidence_outputs;
 CREATE POLICY "Evidence output link select" ON public.evidence_outputs FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "Evidence activity link select" ON public.evidence_activities;
 CREATE POLICY "Evidence activity link select" ON public.evidence_activities FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "Evidence indicator link select" ON public.evidence_indicators;
 CREATE POLICY "Evidence indicator link select" ON public.evidence_indicators FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "Evidence report link select" ON public.evidence_reports;
 CREATE POLICY "Evidence report link select" ON public.evidence_reports FOR SELECT TO authenticated USING (true);
 
 -- Evidence Links write rules
+DROP POLICY IF EXISTS "Evidence strategic objective link write" ON public.evidence_strategic_objectives;
 CREATE POLICY "Evidence strategic objective link write" ON public.evidence_strategic_objectives FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Evidence outcome link write" ON public.evidence_outcomes;
 CREATE POLICY "Evidence outcome link write" ON public.evidence_outcomes FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Evidence output link write" ON public.evidence_outputs;
 CREATE POLICY "Evidence output link write" ON public.evidence_outputs FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Evidence activity link write" ON public.evidence_activities;
 CREATE POLICY "Evidence activity link write" ON public.evidence_activities FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Evidence indicator link write" ON public.evidence_indicators;
 CREATE POLICY "Evidence indicator link write" ON public.evidence_indicators FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Evidence report link write" ON public.evidence_reports;
 CREATE POLICY "Evidence report link write" ON public.evidence_reports FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- 8. REPORTS
+DROP POLICY IF EXISTS "Reports select policy" ON public.reports;
 CREATE POLICY "Reports select policy" ON public.reports FOR SELECT TO authenticated
   USING (
     public.get_user_role(auth.uid()) = 'reporting_officer' OR
@@ -437,6 +479,7 @@ CREATE POLICY "Reports select policy" ON public.reports FOR SELECT TO authentica
     (public.get_user_role(auth.uid()) = 'management' AND status = 'approved')
   );
 
+DROP POLICY IF EXISTS "Reports write policy" ON public.reports;
 CREATE POLICY "Reports write policy" ON public.reports FOR ALL TO authenticated
   USING (
     public.get_user_role(auth.uid()) = 'reporting_officer' OR
@@ -448,17 +491,21 @@ CREATE POLICY "Reports write policy" ON public.reports FOR ALL TO authenticated
   );
 
 -- 9. EVIDENCE VERIFICATIONS
+DROP POLICY IF EXISTS "Evidence verifications select policy" ON public.evidence_verifications;
 CREATE POLICY "Evidence verifications select policy" ON public.evidence_verifications FOR SELECT TO authenticated USING (true);
 
+DROP POLICY IF EXISTS "Evidence verifications insert policy" ON public.evidence_verifications;
 CREATE POLICY "Evidence verifications insert policy" ON public.evidence_verifications FOR INSERT TO authenticated
   WITH CHECK (
     public.get_user_role(auth.uid()) = 'reporting_officer' AND reviewer_id = auth.uid()
   );
 
 -- 10. NOTIFICATIONS
+DROP POLICY IF EXISTS "Notifications select policy" ON public.notifications;
 CREATE POLICY "Notifications select policy" ON public.notifications FOR SELECT TO authenticated
   USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Notifications update policy" ON public.notifications;
 CREATE POLICY "Notifications update policy" ON public.notifications FOR UPDATE TO authenticated
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());

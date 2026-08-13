@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS public.budget_requests (
 
 -- Trigger for updated_at (idempotent)
 DROP TRIGGER IF EXISTS update_budget_requests_modtime ON public.budget_requests;
+DROP TRIGGER IF EXISTS update_budget_requests_modtime ON public.budget_requests;
 CREATE TRIGGER update_budget_requests_modtime
   BEFORE UPDATE ON public.budget_requests
   FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();
@@ -29,6 +30,7 @@ ALTER TABLE public.budget_requests ENABLE ROW LEVEL SECURITY;
 
 -- Finance: full access
 DROP POLICY IF EXISTS "finance_budget_requests_all" ON public.budget_requests;
+DROP POLICY IF EXISTS "finance_budget_requests_all" ON public.budget_requests;
 CREATE POLICY "finance_budget_requests_all" ON public.budget_requests
   FOR ALL TO authenticated
   USING (public.get_user_role(auth.uid())::text = 'finance')
@@ -36,10 +38,12 @@ CREATE POLICY "finance_budget_requests_all" ON public.budget_requests
 
 -- Management: read + review (update)
 DROP POLICY IF EXISTS "management_budget_requests_read" ON public.budget_requests;
+DROP POLICY IF EXISTS "management_budget_requests_read" ON public.budget_requests;
 CREATE POLICY "management_budget_requests_read" ON public.budget_requests
   FOR SELECT TO authenticated
   USING (public.get_user_role(auth.uid()) = 'management');
 
+DROP POLICY IF EXISTS "management_budget_requests_update" ON public.budget_requests;
 DROP POLICY IF EXISTS "management_budget_requests_update" ON public.budget_requests;
 CREATE POLICY "management_budget_requests_update" ON public.budget_requests
   FOR UPDATE TO authenticated
@@ -47,6 +51,7 @@ CREATE POLICY "management_budget_requests_update" ON public.budget_requests
   WITH CHECK (public.get_user_role(auth.uid()) = 'management');
 
 -- Reporting officer: read-only
+DROP POLICY IF EXISTS "officer_budget_requests_read" ON public.budget_requests;
 DROP POLICY IF EXISTS "officer_budget_requests_read" ON public.budget_requests;
 CREATE POLICY "officer_budget_requests_read" ON public.budget_requests
   FOR SELECT TO authenticated

@@ -14,6 +14,7 @@ CREATE TABLE public.beneficiaries (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+DROP TRIGGER IF EXISTS update_beneficiaries_modtime ON public.beneficiaries;
 CREATE TRIGGER update_beneficiaries_modtime
   BEFORE UPDATE ON public.beneficiaries
   FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();

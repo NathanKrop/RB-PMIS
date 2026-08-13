@@ -15,6 +15,7 @@ CREATE TABLE public.resources (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+DROP TRIGGER IF EXISTS update_resources_modtime ON public.resources;
 CREATE TRIGGER update_resources_modtime
   BEFORE UPDATE ON public.resources
   FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();

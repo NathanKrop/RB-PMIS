@@ -50,6 +50,7 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS prevent_authenticated_role_change ON public.users;
 CREATE TRIGGER prevent_authenticated_role_change
   BEFORE UPDATE OF role ON public.users
   FOR EACH ROW EXECUTE FUNCTION public.prevent_authenticated_role_change();

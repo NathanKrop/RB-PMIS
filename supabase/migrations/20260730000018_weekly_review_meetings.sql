@@ -46,10 +46,12 @@ CREATE INDEX weekly_meetings_dept_date_idx ON public.weekly_meetings (department
 CREATE INDEX meeting_action_items_assigned_idx ON public.meeting_action_items (assigned_to, status);
 
 -- Triggers
+DROP TRIGGER IF EXISTS update_weekly_meetings_modtime ON public.weekly_meetings;
 CREATE TRIGGER update_weekly_meetings_modtime
   BEFORE UPDATE ON public.weekly_meetings
   FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();
 
+DROP TRIGGER IF EXISTS update_meeting_action_items_modtime ON public.meeting_action_items;
 CREATE TRIGGER update_meeting_action_items_modtime
   BEFORE UPDATE ON public.meeting_action_items
   FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();
@@ -59,26 +61,32 @@ ALTER TABLE public.weekly_meetings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.meeting_attendees ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.meeting_action_items ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Weekly meetings select" ON public.weekly_meetings;
 CREATE POLICY "Weekly meetings select" ON public.weekly_meetings FOR SELECT TO authenticated
   USING (
     public.get_user_role(auth.uid()) IN ('reporting_officer', 'management') OR
     department_id = public.get_user_department(auth.uid())
   );
 
+DROP POLICY IF EXISTS "Weekly meetings write" ON public.weekly_meetings;
 CREATE POLICY "Weekly meetings write" ON public.weekly_meetings FOR ALL TO authenticated
   USING (public.get_user_role(auth.uid()) = 'reporting_officer')
   WITH CHECK (public.get_user_role(auth.uid()) = 'reporting_officer');
 
+DROP POLICY IF EXISTS "Meeting attendees select" ON public.meeting_attendees;
 CREATE POLICY "Meeting attendees select" ON public.meeting_attendees FOR SELECT TO authenticated
   USING (true);
 
+DROP POLICY IF EXISTS "Meeting attendees write" ON public.meeting_attendees;
 CREATE POLICY "Meeting attendees write" ON public.meeting_attendees FOR ALL TO authenticated
   USING (public.get_user_role(auth.uid()) = 'reporting_officer')
   WITH CHECK (public.get_user_role(auth.uid()) = 'reporting_officer');
 
+DROP POLICY IF EXISTS "Meeting action items select" ON public.meeting_action_items;
 CREATE POLICY "Meeting action items select" ON public.meeting_action_items FOR SELECT TO authenticated
   USING (true);
 
+DROP POLICY IF EXISTS "Meeting action items write" ON public.meeting_action_items;
 CREATE POLICY "Meeting action items write" ON public.meeting_action_items FOR ALL TO authenticated
   USING (public.get_user_role(auth.uid()) = 'reporting_officer')
   WITH CHECK (public.get_user_role(auth.uid()) = 'reporting_officer');
