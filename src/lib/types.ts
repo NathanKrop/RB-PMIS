@@ -313,6 +313,35 @@ export interface Expenditure {
   updated_at: string;
 }
 
+export type TravelStatus = "draft" | "submitted" | "approved" | "rejected" | "cancelled";
+export type TransportMode = "air" | "road" | "rail" | "sea" | "other";
+
+export interface TravelRequest {
+  id: string;
+  department_id: string;
+  traveller_name: string;
+  traveller_user_id: string | null;
+  destination: string;
+  purpose: string;
+  departure_date: string;
+  return_date: string;
+  transport_mode: TransportMode;
+  estimated_cost: number;
+  per_diem_days: number;
+  per_diem_rate: number;
+  total_per_diem: number;
+  advance_requested: number;
+  budget_line_id: string | null;
+  status: TravelStatus;
+  submitted_at: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  review_notes: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ReportingDeadline {
   id: string;
   department_id: string;

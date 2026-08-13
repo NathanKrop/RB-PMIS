@@ -822,3 +822,109 @@ export async function reviewBudgetRequest(id: string, status: "approved" | "reje
   revalidatePath("/dashboard/finance");
   revalidatePath("/dashboard/finance/budget");
 }
+
+// ── Travel Requests ───────────────────────────────────────────────────────────
+
+export async function createTravelRequest(formData: FormData) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+  const { data: profile } = await supabase.from("users").select("role, department_id").eq("id", user.id).single();
+  if (profile?.role !== "finance") return { error: "Only finance officers can create travel requests" };
+
+  const deptId = String(formData.get("department_id") || profile.department_id || "");
+  if (!deptId) return { error: "No department assigned" };
+
+  const departure = String(formData.get("departure_date"));
+  const returnDate = String(formData.get("return_date"));
+  if (returnDate < departure) return { error: "Return date must be on or after departure date" };
+
+  const estimatedCost = Number(formData.get("estimated_cost") || 0);
+  const perDiemDays = Number(formData.get("per_diem_days") || 0);
+  const perDiemRate = Number(formData.get("per_diem_rate") || 0);
+  const advanceRequested = Number(formData.get("advance_requested") || 0);
+
+  if (!Number.isFinite(estimatedCost) || estimatedCost < 0) return { error: "Invalid estimated cost" };
+  if (!Number.isInteger(perDiemDays) || perDiemDays < 0) return { error: "Invalid per diem days" };
+
+  const { error } = await supabase.from("travel_requests").insert({
+    department_id: deptId,
+    traveller_name: String(formData.get("traveller_name")).trim(),
+    traveller_user_id: user.id,
+    destination: String(formData.get("destination")).trim(),
+    purpose: String(formData.get("purpose")).trim(),
+    departure_date: departure,
+    return_date: returnDate,
+    transport_mode: String(formData.get("transport_mode")),
+    estimated_cost: estimatedCost,
+    per_diem_days: perDiemDays,
+    per_diem_rate: perDiemRate,
+    advance_requested: advanceRequested,
+    budget_line_id: String(formData.get("budget_line_id") || "") || null,
+    status: "draft",
+    created_by: user.id,
+  });
+  if (error) return { error: error.message };
+  revalidatePath("/dashboard/finance/travel");
+  revalidatePath("/dashboard/finance");
+}
+
+export async function submitTravelRequest(id: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+  const { error } = await supabase.from("travel_requests")
+    .update({ status: "submitted", submitted_at: new Date().toISOString() })
+    .eq("id", id).eq("status", "draft");
+  if (error) return { error: error.message };
+
+  // Notify management
+  const { data: managers } = await supabase.from("users").select("id").eq("role", "management");
+  const { data: tr } = await supabase.from("travel_requests").select("traveller_name, destination").eq("id", id).single();
+  for (const m of managers ?? []) {
+    await createNotification(m.id, "Travel Request Submitted",
+      `Travel request for ${tr?.traveller_name} to ${tr?.destination} requires approval.`, "info");
+  }
+  revalidatePath("/dashboard/finance/travel");
+  revalidatePath("/dashboard/finance");
+}
+
+export async function reviewTravelRequest(id: string, status: "approved" | "rejected", reviewNotes?: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+  const { data: profile } = await supabase.from("users").select("role").eq("id", user.id).single();
+  if (!["management", "finance"].includes(profile?.role ?? "")) return { error: "Unauthorized" };
+
+  const { error } = await supabase.from("travel_requests").update({
+    status,
+    reviewed_by: user.id,
+    reviewed_at: new Date().toISOString(),
+    review_notes: reviewNotes?.trim() || null,
+  }).eq("id", id).eq("status", "submitted");
+  if (error) return { error: error.message };
+
+  // Notify finance officers
+  const { data: financeUsers } = await supabase.from("users").select("id").eq("role", "finance");
+  const { data: tr } = await supabase.from("travel_requests").select("traveller_name, destination").eq("id", id).single();
+  for (const f of financeUsers ?? []) {
+    await createNotification(f.id,
+      `Travel Request ${status === "approved" ? "Approved" : "Rejected"}`,
+      `Travel for ${tr?.traveller_name} to ${tr?.destination} has been ${status}.`,
+      status === "approved" ? "info" : "escalation");
+  }
+  revalidatePath("/dashboard/finance/travel");
+  revalidatePath("/dashboard/finance");
+}
+
+export async function cancelTravelRequest(id: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+  const { error } = await supabase.from("travel_requests")
+    .update({ status: "cancelled" })
+    .eq("id", id).in("status", ["draft", "submitted"]);
+  if (error) return { error: error.message };
+  revalidatePath("/dashboard/finance/travel");
+  revalidatePath("/dashboard/finance");
+}

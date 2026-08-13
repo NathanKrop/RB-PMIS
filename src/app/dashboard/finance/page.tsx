@@ -23,16 +23,19 @@ const REQ_STATUS_COLORS: Record<string, string> = {
 export default async function FinanceDashboardPage() {
   const supabase = await createClient();
 
-  const [{ data: budgetLines }, { data: expenditures }, { data: departments }, { data: budgetRequests }] = await Promise.all([
+  const [{ data: budgetLines }, { data: expenditures }, { data: departments }, { data: budgetRequests }, { data: travelRequests }] = await Promise.all([
     supabase.from("budget_lines").select("*, departments(name)"),
     supabase.from("expenditures").select("*"),
     supabase.from("departments").select("id, name").order("name"),
     supabase.from("budget_requests").select("*, departments(name)").order("created_at", { ascending: false }).limit(5),
+    supabase.from("travel_requests").select("id, traveller_name, destination, status, estimated_cost, total_per_diem, departure_date, transport_mode").order("created_at", { ascending: false }).limit(5),
   ]);
 
   const bls = budgetLines ?? [];
   const exps = expenditures ?? [];
   const reqs = budgetRequests ?? [];
+  const travels = travelRequests ?? [];
+  const pendingTravel = travels.filter((t) => t.status === "submitted").length;
 
   const totalApproved = bls.reduce((s, b) => s + Number(b.amount_approved), 0);
   const totalRevised = bls.reduce((s, b) => s + Number(b.amount_revised ?? b.amount_approved), 0);
@@ -116,6 +119,51 @@ export default async function FinanceDashboardPage() {
                       <span className={`text-xs px-2 py-0.5 rounded-full ${REQ_STATUS_COLORS[r.status] ?? ""}`}>
                         {r.status}
                       </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Travel Requests Summary */}
+      <Card className={pendingTravel > 0 ? "border-blue-200" : ""}>
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium">
+              Travel Requests
+              {pendingTravel > 0 && (
+                <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700">
+                  {pendingTravel} pending
+                </span>
+              )}
+            </CardTitle>
+            <Link href="/dashboard/finance/travel" className="text-xs text-primary hover:underline">View all →</Link>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {travels.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No travel requests yet.</p>
+          ) : (
+            <div className="divide-y text-sm">
+              {travels.map((t) => {
+                const total = Number(t.estimated_cost) + Number(t.total_per_diem);
+                const TRANSPORT_ICONS: Record<string, string> = { air: "✈️", road: "🚗", rail: "🚆", sea: "🚢", other: "🧳" };
+                const STATUS_COLORS: Record<string, string> = {
+                  draft: "bg-gray-100 text-gray-600", submitted: "bg-yellow-100 text-yellow-700",
+                  approved: "bg-green-100 text-green-700", rejected: "bg-red-100 text-red-700", cancelled: "bg-slate-100 text-slate-500",
+                };
+                return (
+                  <div key={t.id} className="py-2 flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-medium truncate">{TRANSPORT_ICONS[t.transport_mode] ?? "🧳"} {t.traveller_name} → {t.destination}</p>
+                      <p className="text-xs text-muted-foreground">{t.departure_date}</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-xs font-semibold">{total.toLocaleString()}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${STATUS_COLORS[t.status] ?? ""}`}>{t.status}</span>
                     </div>
                   </div>
                 );

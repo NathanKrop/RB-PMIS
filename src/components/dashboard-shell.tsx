@@ -7,7 +7,7 @@ import {
   LayoutDashboard, ClipboardList, FileText, Upload,
   BarChart2, Settings, LogOut, Menu, X, BookOpen, Bell, Target,
   ClipboardCheck, ShieldAlert, Users, Briefcase, CalendarClock,
-  MessageSquareText, DollarSign, Receipt, FilePlus,
+  MessageSquareText, DollarSign, Receipt, FilePlus, Plane,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -75,6 +75,7 @@ const navByRole: Record<UserRole, { href: string; label: string; icon: React.Ele
     { href: "/dashboard/finance/budget", label: "Budget Lines", icon: DollarSign },
     { href: "/dashboard/finance/requests", label: "Budget Requests", icon: FilePlus },
     { href: "/dashboard/finance/expenditures", label: "Expenditures", icon: Receipt },
+    { href: "/dashboard/finance/travel", label: "Travel Requests", icon: Plane },
     { href: "/dashboard/finance/reports", label: "Reports", icon: FileText },
     { href: "/dashboard/finance/notifications", label: "Notifications", icon: Bell },
   ],
