@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS public.budget_requests (
   updated_at        timestamptz NOT NULL DEFAULT now()
 );
 
+-- Trigger for updated_at (idempotent)
+DROP TRIGGER IF EXISTS update_budget_requests_modtime ON public.budget_requests;
 CREATE TRIGGER update_budget_requests_modtime
   BEFORE UPDATE ON public.budget_requests
   FOR EACH ROW EXECUTE FUNCTION public.handle_update_timestamp();
@@ -26,22 +28,26 @@ CREATE TRIGGER update_budget_requests_modtime
 ALTER TABLE public.budget_requests ENABLE ROW LEVEL SECURITY;
 
 -- Finance: full access
+DROP POLICY IF EXISTS "finance_budget_requests_all" ON public.budget_requests;
 CREATE POLICY "finance_budget_requests_all" ON public.budget_requests
   FOR ALL TO authenticated
   USING (public.get_user_role(auth.uid())::text = 'finance')
   WITH CHECK (public.get_user_role(auth.uid())::text = 'finance');
 
 -- Management: read + review (update)
+DROP POLICY IF EXISTS "management_budget_requests_read" ON public.budget_requests;
 CREATE POLICY "management_budget_requests_read" ON public.budget_requests
   FOR SELECT TO authenticated
   USING (public.get_user_role(auth.uid()) = 'management');
 
+DROP POLICY IF EXISTS "management_budget_requests_update" ON public.budget_requests;
 CREATE POLICY "management_budget_requests_update" ON public.budget_requests
   FOR UPDATE TO authenticated
   USING (public.get_user_role(auth.uid()) = 'management')
   WITH CHECK (public.get_user_role(auth.uid()) = 'management');
 
 -- Reporting officer: read-only
+DROP POLICY IF EXISTS "officer_budget_requests_read" ON public.budget_requests;
 CREATE POLICY "officer_budget_requests_read" ON public.budget_requests
   FOR SELECT TO authenticated
   USING (public.get_user_role(auth.uid()) = 'reporting_officer');
